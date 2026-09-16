@@ -427,7 +427,7 @@ footer .fl2 a:hover{color:var(--ink)}
 .side button.on[data-s="sell"]{border-color:var(--sell);color:var(--sell);background:rgba(255,142,107,.1)}
 .sealed-out{font-family:var(--mono);font-size:11.5px;color:var(--mute);word-break:break-all;line-height:1.5}
 .sealed-out b{color:var(--ok);font-weight:500}
-@media (max-width:760px){ .hd-w{padding:0 10px;font-size:12px} .hd-w .wl{font-size:12px} #musBtn{display:none} }
+@media (max-width:760px){ .hd-w{padding:0 10px;font-size:12px} .hd-w .wl{font-size:12px} }
 
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -452,7 +452,6 @@ footer .fl2 a:hover{color:var(--ink)}
     <div class="hd-r">
       <span class="pill net"><span class="dot"></span>ROBINHOOD CHAIN</span>
       <button class="tgl on" id="sfxBtn" aria-pressed="true">SOUND</button>
-      <button class="tgl" id="musBtn" aria-pressed="false">MUSIC</button>
       <button class="btn ghost hd-w wbtn" type="button" id="wBtn"><span class="wl">Connect wallet</span></button>
       <a class="btn primary hd-buy soon buyLink" href="#" id="buyBtn2">Buy</a>
     </div>
@@ -804,77 +803,7 @@ var S={
   coin:function(){ tone(1568,2093,.08,'triangle',.04); setTimeout(function(){tone(2093,2637,.1,'triangle',.03);},60); }
 };
 
-/* music: minimal clock ambient, D dorian, 100 bpm */
-var MU={on:false,t:null,step:0,next:0,g:null};
-var STEP=60/100/2;
-var MEL=[587.33,0,440,0,523.25,0,440,392,0,440,0,329.63,392,0,293.66,0];
-var MEL2=[698.46,0,523.25,0,587.33,0,523.25,440,0,523.25,0,392,440,0,349.23,0];
-var PADS=[[146.83,220,261.63,329.63],[116.54,174.61,220,293.66],[130.81,196,246.94,329.63],[110,164.81,220,277.18]];
-var BASS=[73.42,58.27,65.41,55];
-function mn(f,at,dur,type,g,cut){
-  var c=ac(); if(!c||!MU.g) return;
-  var o=c.createOscillator(), gg=c.createGain(), fl=c.createBiquadFilter();
-  o.type=type; o.frequency.value=f; fl.type='lowpass'; fl.frequency.value=cut||2000;
-  gg.gain.setValueAtTime(.0001,at); gg.gain.exponentialRampToValueAtTime(g,at+.012); gg.gain.exponentialRampToValueAtTime(.0001,at+dur);
-  o.connect(fl); fl.connect(gg); gg.connect(MU.g); o.start(at); o.stop(at+dur+.05);
-}
-function pad(fs,at,dur){
-  var c=ac(); if(!c||!MU.g) return;
-  fs.forEach(function(f){
-    var o=c.createOscillator(), gg=c.createGain(); o.type='sine'; o.frequency.value=f; o.detune.value=(rnd()-.5)*8;
-    gg.gain.setValueAtTime(.0001,at); gg.gain.linearRampToValueAtTime(.012,at+1.2); gg.gain.linearRampToValueAtTime(.0001,at+dur);
-    o.connect(gg); gg.connect(MU.g); o.start(at); o.stop(at+dur+.1);
-  });
-}
-function mtick(at,acc){
-  var c=ac(); if(!c||!MU.g) return;
-  var len=Math.floor(c.sampleRate*.03), b=c.createBuffer(1,len,c.sampleRate), d=b.getChannelData(0);
-  for(var i=0;i<len;i++) d[i]=(rnd()*2-1)*Math.pow(1-i/len,3);
-  var s=c.createBufferSource(); s.buffer=b; var f=c.createBiquadFilter(); f.type='highpass'; f.frequency.value=6000;
-  var gg=c.createGain(); gg.gain.value=acc?.05:.022; s.connect(f); f.connect(gg); gg.connect(MU.g); s.start(at);
-}
-function musSchedule(){
-  var c=ac(); if(!c) return;
-  while(MU.next < c.currentTime+.5){
-    var st=MU.step, i=st%16, bar=Math.floor(st/16)%4, at=Math.max(MU.next,c.currentTime+.02);
-    var mel=(Math.floor(st/64)%2)?MEL2:MEL;
-    if(mel[i] && !(bar===3&&i>10)) mn(mel[i],at,.55,'sine',.035,2400);
-    if(mel[i] && i%4===0) mn(mel[i]*2,at+STEP*.5,.3,'sine',.008,4000);
-    if(i===0){ pad(PADS[bar],at,STEP*16+.4); mn(BASS[bar],at,STEP*6,'triangle',.07,300); }
-    if(i===8) mn(BASS[bar],at,STEP*4,'triangle',.05,300);
-    if(i%2===0) mtick(at,i%4===0);
-    if(i===0 && bar===0 && st>0) mn(1567.98,at,1.6,'sine',.012,5000);
-    MU.next+=STEP; MU.step++;
-  }
-}
-function musStart(){
-  var c=ac(); if(!c) return;
-  MU.g=c.createGain(); MU.g.gain.value=.0001; MU.g.connect(c.destination);
-  MU.g.gain.exponentialRampToValueAtTime(.9,c.currentTime+1.2);
-  MU.on=true; MU.step=0; MU.next=c.currentTime+.1;
-  clearInterval(MU.t); MU.t=setInterval(musSchedule,100);
-  $('musBtn').classList.add('on'); $('musBtn').setAttribute('aria-pressed','true');
-}
-function musStop(){
-  MU.on=false; clearInterval(MU.t); MU.t=null;
-  if(MU.g&&AC){ var g=MU.g; g.gain.setTargetAtTime(.0001,AC.currentTime,.2); setTimeout(function(){ try{g.disconnect();}catch(e){} },1200); }
-  MU.g=null;
-  $('musBtn').classList.remove('on'); $('musBtn').setAttribute('aria-pressed','false');
-}
-document.addEventListener('visibilitychange',function(){
-  if(document.hidden&&MU.on&&MU.t){ clearInterval(MU.t); MU.t=null; }
-  else if(!document.hidden&&MU.on&&!MU.t&&AC){ MU.next=AC.currentTime+.1; MU.t=setInterval(musSchedule,100); }
-});
-$('musBtn').addEventListener('click',function(){ if(MU.on) musStop(); else musStart(); });
 $('sfxBtn').addEventListener('click',function(){ sfxOn=!sfxOn; this.classList.toggle('on',sfxOn); this.setAttribute('aria-pressed',String(sfxOn)); if(sfxOn) S.tick(); });
-var firstDone=false;
-function firstTouch(e){
-  if(firstDone) return;
-  var t=e.target; if(t&&t.closest&&t.closest('#musBtn,#sfxBtn')) return;
-  firstDone=true; ['pointerdown','keydown','touchstart','wheel'].forEach(function(n){ document.removeEventListener(n,firstTouch,true); });
-  if(!MU.on) musStart();
-}
-['pointerdown','keydown','touchstart','wheel'].forEach(function(n){ document.addEventListener(n,firstTouch,true); });
 
 /* ---------- coin rain ---------- */
 function rainCoin(){
