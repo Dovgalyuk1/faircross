@@ -1,0 +1,1343 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>FairCross — one window, one price</title>
+<meta name="description" content="New meme tokens launch through sealed five-minute windows. Nobody sees the orders, nobody gets in first, and every buyer crosses at the same price.">
+<meta property="og:title" content="FairCross — one window, one price">
+<meta property="og:description" content="Sealed five-minute launch windows on Robinhood Chain. Every buyer in the window pays one price, the sniper included.">
+<meta property="og:image" content="assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#09090b">
+<link rel="icon" href="assets/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#09090b; --bg2:#0d0e11; --panel:#111216; --panel2:#15161b;
+  --line:#1e2026; --line2:#2a2d35; --line3:#3a3e48;
+  --ink:#eceae4; --mute:#8b8f98; --dim:#5a5e67;
+  --buy:#8c9eff; --sell:#ff8e6b; --cross:#f4f1e8; --ok:#7ee0b0; --warn:#ffcf6b;
+  --sans:"Geist",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  --mono:"Geist Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --serif:"Instrument Serif",Georgia,serif;
+  --hh:60px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{overflow-x:clip}
+html{scroll-behavior:smooth;scroll-padding-top:calc(var(--hh) + 12px)}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.mono{font-family:var(--mono)}
+.wrap{max-width:1280px;margin:0 auto;padding:0 28px}
+
+/* background */
+.bg-grid{position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:88px 88px;opacity:.28;
+  -webkit-mask-image:radial-gradient(ellipse 90% 70% at 50% 20%,#000 30%,transparent 80%);mask-image:radial-gradient(ellipse 90% 70% at 50% 20%,#000 30%,transparent 80%)}
+.bg-x{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.bg-x i{position:absolute;left:50%;top:38%;width:160vmax;height:1px;background:linear-gradient(90deg,transparent,rgba(140,158,255,.18),transparent);transform-origin:center}
+.bg-x i:nth-child(1){transform:translate(-50%,0) rotate(14deg)}
+.bg-x i:nth-child(2){transform:translate(-50%,0) rotate(-14deg);background:linear-gradient(90deg,transparent,rgba(255,142,107,.14),transparent)}
+.bg-x i:nth-child(3){transform:translate(-50%,0);background:linear-gradient(90deg,transparent,rgba(244,241,232,.10),transparent)}
+main,header,footer,.tape{position:relative;z-index:1}
+
+/* header */
+header{position:sticky;top:0;z-index:50;height:var(--hh);background:rgba(9,9,11,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+header .wrap{height:100%;display:flex;align-items:center;gap:26px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:600;letter-spacing:.14em;font-size:14px}
+.brand svg{width:26px;height:26px;display:block}
+nav{display:flex;gap:22px;font-size:13px;color:var(--mute)}
+nav a:hover{color:var(--ink)}
+.hd-r{margin-left:auto;display:flex;align-items:center;gap:10px}
+.pill{display:inline-flex;align-items:center;gap:8px;height:30px;padding:0 12px;border:1px solid var(--line2);border-radius:999px;font-family:var(--mono);font-size:11px;color:var(--mute);letter-spacing:.04em;white-space:nowrap}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 3px rgba(126,224,176,.14);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 6px rgba(126,224,176,.04)}}
+.tgl{height:30px;padding:0 11px;border:1px solid var(--line2);border-radius:8px;font-family:var(--mono);font-size:11px;color:var(--mute);letter-spacing:.04em}
+.tgl.on{color:var(--ink);border-color:var(--line3)}
+.tgl:hover{border-color:var(--line3)}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;height:46px;padding:0 22px;border-radius:10px;font-weight:500;font-size:14px;letter-spacing:.01em;border:1px solid var(--line2);transition:background .2s,border-color .2s,color .2s,box-shadow .2s;white-space:nowrap}
+.btn.primary{background:var(--cross);color:#0b0b0d;border-color:var(--cross)}
+.btn.primary:hover{box-shadow:0 0 0 4px rgba(244,241,232,.12)}
+.btn.ghost:hover{border-color:var(--line3);background:var(--panel)}
+.btn.soon{background:transparent;color:var(--dim);border-color:var(--line2);cursor:not-allowed}
+.btn.soon .tag{font-family:var(--mono);font-size:10px;padding:2px 6px;border:1px solid var(--line2);border-radius:4px;color:var(--dim)}
+.btn.game{border-color:rgba(140,158,255,.5);color:var(--ink);background:rgba(140,158,255,.08);animation:glow 2.4s ease-in-out infinite}
+.btn.game:hover{background:rgba(140,158,255,.16)}
+@keyframes glow{50%{box-shadow:0 0 0 5px rgba(140,158,255,.10)}}
+.btn .ar{font-family:var(--mono);font-size:12px;color:var(--buy)}
+.hd-buy{height:34px;padding:0 14px;font-size:13px}
+
+/* tape */
+.tape{border-bottom:1px solid var(--line);height:34px;overflow:hidden;display:flex;align-items:center;background:var(--bg2)}
+.tape-in{display:flex;gap:44px;white-space:nowrap;animation:mq 70s linear infinite;font-family:var(--mono);font-size:11px;color:var(--mute);letter-spacing:.06em;padding-left:44px;flex-shrink:0}
+.tape-in b{color:var(--ink);font-weight:500}
+.tape-in em{font-style:normal;color:var(--buy)}
+@keyframes mq{to{transform:translateX(-50%)}}
+
+/* hero */
+.hero{min-height:calc(100svh - var(--hh) - 34px);display:flex;align-items:center;padding:36px 0 40px}
+.hero .wrap{width:100%;display:grid;grid-template-columns:1.05fr .95fr;gap:52px;align-items:center}
+.hero .wrap>*{min-width:0}
+.kicker{display:inline-flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--mute);text-transform:uppercase}
+.kicker:before{content:"";width:22px;height:1px;background:var(--line3)}
+h1{font-weight:500;font-size:clamp(40px,5.4vw,76px);line-height:1.02;letter-spacing:-.035em;margin:22px 0 22px}
+h1 i{font-family:var(--serif);font-weight:400;font-style:italic;letter-spacing:-.01em;color:var(--cross)}
+.lead{font-size:clamp(15px,1.25vw,18px);color:var(--mute);max-width:560px;line-height:1.6}
+.lead b{color:var(--ink);font-weight:500}
+.cta{display:flex;flex-wrap:wrap;gap:10px;margin-top:30px}
+.ca{margin-top:18px;display:inline-flex;align-items:center;gap:10px;font-family:var(--mono);font-size:12px;color:var(--mute);border:1px dashed var(--line2);border-radius:8px;padding:8px 12px;cursor:pointer}
+.ca b{color:var(--ink);font-weight:500}
+.ca:hover{border-color:var(--line3)}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);margin-top:34px;border-top:1px solid var(--line);max-width:560px}
+.facts div{padding:16px 16px 0 0}
+.facts div+div{padding-left:16px;border-left:1px solid var(--line)}
+.facts b{display:block;font-family:var(--mono);font-weight:500;font-size:22px;letter-spacing:-.02em}
+.facts span{font-size:12px;color:var(--mute)}
+
+/* console */
+.console{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line2);border-radius:16px;overflow:hidden;box-shadow:0 40px 80px -40px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.02) inset}
+.c-hd{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--mute)}
+.st{display:inline-flex;align-items:center;gap:7px;padding:4px 9px;border-radius:6px;border:1px solid var(--line2);color:var(--ink)}
+.st i{width:6px;height:6px;border-radius:50%;background:var(--buy)}
+.st.x i{background:var(--cross)}
+.c-top{display:flex;align-items:flex-end;justify-content:space-between;padding:18px 18px 6px;gap:12px}
+.c-tok{font-size:13px;color:var(--mute)}
+.c-tok b{display:block;font-size:20px;color:var(--ink);font-weight:500;letter-spacing:-.01em}
+.c-timer{font-family:var(--mono);font-size:clamp(38px,4vw,52px);font-weight:500;letter-spacing:-.04em;line-height:1}
+.c-timer small{font-size:12px;color:var(--dim);letter-spacing:.08em;display:block;text-align:right;margin-bottom:6px}
+.vault{position:relative;height:250px;margin:6px 18px 0;border:1px solid var(--line);border-radius:12px;background:radial-gradient(ellipse at 50% 50%,rgba(140,158,255,.05),transparent 70%);cursor:pointer;overflow:hidden}
+.vault canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.vault .hint{position:absolute;left:12px;bottom:10px;font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--dim);pointer-events:none}
+.vault .fl{position:absolute;font-family:var(--mono);font-size:11px;color:var(--cross);pointer-events:none;animation:fl 1s ease-out forwards}
+@keyframes fl{to{transform:translateY(-34px);opacity:0}}
+.c-rows{padding:10px 18px 4px}
+.c-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px;color:var(--mute);gap:10px}
+.c-row:last-child{border-bottom:0}
+.c-row b{font-family:var(--mono);font-weight:500;color:var(--ink);font-size:13px;text-align:right}
+.bands{display:flex;gap:3px;align-items:flex-end;height:16px}
+.bands i{width:7px;background:var(--buy);opacity:.8;border-radius:1px;transition:height .6s}
+.bands i.s{background:var(--sell)}
+.c-cta{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 18px;border-top:1px solid var(--line);background:rgba(140,158,255,.05)}
+.c-cta p{font-size:12.5px;color:var(--mute);line-height:1.4}
+.c-cta p b{color:var(--ink);font-weight:500;display:block;font-size:13px}
+
+/* sections */
+section.blk{padding:110px 0;border-top:1px solid var(--line)}
+.sh{display:flex;justify-content:space-between;align-items:flex-end;gap:40px;margin-bottom:46px;flex-wrap:wrap}
+.sh .n{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--dim)}
+.sh h2{font-weight:500;font-size:clamp(30px,3.6vw,50px);letter-spacing:-.03em;line-height:1.05;margin-top:12px}
+.sh h2 i{font-family:var(--serif);font-weight:400;color:var(--cross)}
+.sh p{max-width:430px;color:var(--mute);font-size:15px}
+
+/* game */
+.g-shell{border:1px solid var(--line2);border-radius:16px;background:var(--panel);overflow:hidden}
+.g-stats{display:grid;grid-template-columns:repeat(5,1fr);border-bottom:1px solid var(--line)}
+.g-stats div{padding:14px 18px;border-right:1px solid var(--line)}
+.g-stats div:last-child{border-right:0}
+.g-stats span{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--dim)}
+.g-stats b{font-family:var(--mono);font-weight:500;font-size:20px;letter-spacing:-.02em}
+.g-main{display:grid;grid-template-columns:1fr 320px}
+.g-main>*{min-width:0}
+.g-left{padding:18px;border-right:1px solid var(--line)}
+.g-cv{position:relative;border:1px solid var(--line);border-radius:12px;background:var(--bg2);height:340px;overflow:hidden;touch-action:none;cursor:ew-resize}
+.g-cv canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.g-ov{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;background:rgba(9,9,11,.72);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);transition:opacity .3s}
+.g-ov.hide{opacity:0;pointer-events:none}
+.g-ov h3{font-weight:500;font-size:26px;letter-spacing:-.02em;margin-bottom:10px}
+.g-ov h3 i{font-family:var(--serif);font-weight:400}
+.g-ov p{color:var(--mute);max-width:470px;font-size:14px}
+.g-ov .rules{display:flex;gap:18px;margin-top:18px;flex-wrap:wrap;justify-content:center;font-family:var(--mono);font-size:11px;color:var(--mute)}
+.g-ov .rules span{display:flex;align-items:center;gap:6px}
+.g-ov .rules i{width:10px;height:10px;border-radius:2px;display:inline-block}
+.meter{margin-top:14px}
+.m-lab{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--dim);margin-bottom:7px}
+.m-cells{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.m-cells i{height:12px;border-radius:3px;background:var(--line);transition:background .12s}
+.m-cells i.on{background:var(--sell)}
+.m-cells i:nth-child(n+5).on{background:var(--buy)}
+.m-cells i:nth-child(4).on{background:var(--cross)}
+.m-say{margin-top:8px;font-size:12.5px;color:var(--mute);min-height:20px;text-align:center}
+.m-say b{color:var(--ink);font-weight:500}
+.g-ctl{display:grid;grid-template-columns:54px 1fr 54px;gap:8px;margin-top:12px}
+.g-ctl button{height:48px;border-radius:10px;border:1px solid var(--line2);font-family:var(--mono);font-size:13px;letter-spacing:.06em;user-select:none;-webkit-user-select:none;touch-action:none}
+.g-ctl button:hover{border-color:var(--line3)}
+#gGo{background:var(--cross);color:#0b0b0d;border-color:var(--cross);font-weight:600}
+#gGo:disabled{background:transparent;color:var(--dim);border-color:var(--line2);cursor:default}
+.g-right{display:flex;flex-direction:column;min-height:0}
+.g-right h4{font-family:var(--mono);font-weight:500;font-size:10px;letter-spacing:.14em;color:var(--dim);padding:14px 16px 8px}
+.man{list-style:none;padding:0 8px}
+.man li{display:grid;grid-template-columns:22px 1fr auto;gap:8px;align-items:center;padding:7px 8px;border-radius:8px;font-size:13px;color:var(--mute)}
+.man li .i{font-family:var(--mono);font-size:10px;color:var(--dim)}
+.man li b{font-family:var(--mono);font-weight:500;font-size:11px;color:var(--dim)}
+.man li.cur{background:var(--panel2);color:var(--ink);box-shadow:inset 2px 0 0 var(--buy)}
+.man li.done{color:var(--ink)}
+.man li.done b{color:var(--ok)}
+.log{flex:1;min-height:150px;max-height:210px;overflow:auto;border-top:1px solid var(--line);margin-top:10px;padding:8px 16px 12px;font-family:var(--mono);font-size:11px;line-height:1.75;color:var(--mute)}
+.log div span{color:var(--dim);margin-right:8px}
+.log .g{color:var(--ok)} .log .r{color:var(--sell)} .log .b{color:var(--buy)} .log .w{color:var(--warn)}
+
+/* reports */
+.reports{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:18px}
+.rep{position:relative;border:1px solid var(--line);border-radius:12px;padding:18px;background:var(--panel);min-height:220px;display:flex;flex-direction:column;overflow:hidden}
+.rep .rh{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--dim)}
+.rep h5{font-weight:500;font-size:22px;letter-spacing:-.02em;margin:14px 0 8px}
+.rep p{font-size:13px;color:var(--mute);line-height:1.55}
+.rep .rf{margin-top:auto;padding-top:14px;display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--ink);border-top:1px solid var(--line)}
+.rep .seal{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:repeating-linear-gradient(135deg,var(--panel) 0 8px,var(--bg2) 8px 16px);font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--dim);transition:opacity .5s}
+.rep .seal b{width:34px;height:34px;border:1px solid var(--line3);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--mute);font-weight:500}
+.rep.open .seal{opacity:0;pointer-events:none}
+.rep.open{border-color:var(--line2)}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.step{padding:26px 24px 30px;border-right:1px solid var(--line);background:var(--panel);position:relative}
+.step:last-child{border-right:0}
+.step .sn{font-family:var(--mono);font-size:11px;color:var(--dim);letter-spacing:.12em}
+.step svg{width:54px;height:54px;margin:26px 0 22px;display:block}
+.step h3{font-weight:500;font-size:20px;letter-spacing:-.01em;margin-bottom:10px}
+.step p{font-size:14px;color:var(--mute)}
+.step:hover{background:var(--panel2)}
+
+/* compare */
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.cmp-c{border:1px solid var(--line);border-radius:16px;background:var(--panel);overflow:hidden}
+.cmp-h{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--mute)}
+.cmp-h b{color:var(--ink);font-weight:500}
+.cmp canvas{display:block;width:100%;height:260px}
+.cmp-s{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line)}
+.cmp-s div{padding:12px 18px;border-right:1px solid var(--line)}
+.cmp-s div:last-child{border-right:0}
+.cmp-s span{display:block;font-size:11px;color:var(--dim)}
+.cmp-s b{font-family:var(--mono);font-weight:500;font-size:15px}
+.cmp-s .bad{color:var(--sell)} .cmp-s .good{color:var(--ok)}
+.cmp-bar{display:flex;justify-content:center;margin-top:18px}
+
+/* ledger */
+.tbl{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--panel)}
+.tr{display:grid;grid-template-columns:1.2fr .9fr 1fr 1.3fr 1.1fr;gap:12px;align-items:center;padding:14px 20px;border-bottom:1px solid var(--line);font-size:14px}
+.tr:last-child{border-bottom:0}
+.tr.th{font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--dim);background:var(--bg2);padding:11px 20px}
+.tr .tk{font-weight:500}
+.tr .mn{font-family:var(--mono);font-size:13px;color:var(--mute)}
+.stt{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px}
+.stt i{width:6px;height:6px;border-radius:50%;background:var(--buy)}
+.stt.x{color:var(--cross)} .stt.x i{background:var(--cross);box-shadow:0 0 10px var(--cross)}
+.c-prog{display:block}
+.prog{display:block;height:4px;border-radius:2px;background:var(--line);overflow:hidden}
+.prog i{display:block;height:100%;background:var(--buy);width:0}
+.tr.flash{animation:flash 1.4s ease-out}
+@keyframes flash{0%{background:rgba(244,241,232,.10)}100%{background:transparent}}
+
+/* order types */
+.types{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.type{background:var(--panel);padding:24px 24px 28px}
+.type .tt{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.type h3{font-weight:500;font-size:18px}
+.type code{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--dim);border:1px solid var(--line2);border-radius:4px;padding:3px 6px}
+.type p{font-size:14px;color:var(--mute)}
+
+/* transparency */
+.tp{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.tp-c{border:1px solid var(--line);border-radius:16px;padding:26px;background:var(--panel)}
+.tp-c h3{font-family:var(--mono);font-weight:500;font-size:11px;letter-spacing:.14em;color:var(--mute);margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.tp-c h3 i{width:8px;height:8px;border-radius:50%}
+.tp-c ul{list-style:none}
+.tp-c li{display:flex;justify-content:space-between;gap:16px;padding:13px 0;border-top:1px solid var(--line);font-size:14.5px}
+.tp-c li span{font-family:var(--mono);font-size:12px;color:var(--dim);white-space:nowrap}
+.tp-c.sealed li span{letter-spacing:.2em}
+
+/* token */
+.tok{display:grid;grid-template-columns:.8fr 1.2fr;gap:14px}
+.tok-l{border:1px solid var(--line);border-radius:16px;background:var(--panel);padding:30px;display:flex;flex-direction:column;justify-content:space-between;gap:30px;position:relative;overflow:hidden}
+.tok-l .big{font-family:var(--mono);font-size:clamp(28px,3vw,40px);font-weight:500;letter-spacing:-.03em}
+.tok-l .coin{width:140px;height:140px;border-radius:50%;border:1px solid var(--line3);display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 35% 30%,#1c1d24,#0c0d10);box-shadow:inset 0 0 0 10px #111216,inset 0 0 0 11px var(--line2);cursor:pointer;transition:transform .15s}
+.tok-l .coin:active{transform:scale(.96)}
+.tok-l .coin svg{width:64px;height:64px}
+.spec{border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.spec div{display:grid;grid-template-columns:150px 1fr;gap:20px;padding:20px 24px;border-bottom:1px solid var(--line);background:var(--panel)}
+.spec div:last-child{border-bottom:0}
+.spec dt{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--dim);padding-top:3px}
+.spec dd{font-size:14.5px;color:var(--mute)}
+.spec dd b{color:var(--ink);font-weight:500}
+
+footer{border-top:1px solid var(--line);padding:40px 0 50px;margin-top:0}
+footer .wrap{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+footer p{font-size:13px;color:var(--dim)}
+footer .fl2{display:flex;gap:18px;font-size:13px;color:var(--mute)}
+footer .fl2 a:hover{color:var(--ink)}
+
+/* win */
+#win{position:fixed;inset:0;z-index:120;display:flex;align-items:center;justify-content:center;background:rgba(5,5,7,.78);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);opacity:0;pointer-events:none;transition:opacity .35s;padding:20px}
+#win.on{opacity:1;pointer-events:auto}
+.w-card{width:min(520px,100%);border:1px solid var(--line3);border-radius:18px;background:var(--panel);padding:32px;text-align:left}
+.w-card .n{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--ok)}
+.w-card h3{font-weight:500;font-size:34px;letter-spacing:-.03em;line-height:1.05;margin:14px 0 12px}
+.w-card h3 i{font-family:var(--serif);font-weight:400}
+.w-card p{color:var(--mute);font-size:14px}
+.w-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:22px 0}
+.w-grid div{background:var(--bg2);padding:14px 16px}
+.w-grid span{display:block;font-size:11px;color:var(--dim)}
+.w-grid b{font-family:var(--mono);font-weight:500;font-size:20px}
+.w-btns{display:flex;gap:10px;flex-wrap:wrap}
+#rain{position:fixed;inset:0;pointer-events:none;z-index:140;overflow:hidden}
+.coin-p{position:absolute;width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fffdf6,#cfcabd 60%,#8f8b80);box-shadow:0 0 0 1px rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center}
+.coin-p{box-shadow:0 0 0 1px rgba(0,0,0,.4),inset 0 0 0 3px #bdb8aa}
+.coin-p:after{content:"";width:6px;height:6px;border-radius:50%;background:#2a2b30}
+.toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,20px);z-index:130;background:var(--panel2);border:1px solid var(--line3);border-radius:10px;padding:11px 16px;font-size:13px;opacity:0;transition:.25s;pointer-events:none;max-width:calc(100% - 32px);text-align:center}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+
+/* responsive */
+@media (min-width:1001px) and (max-height:780px){
+  h1{font-size:clamp(36px,4.3vw,58px);margin:14px 0 14px}
+  .facts{margin-top:20px} .cta{margin-top:20px}
+  .vault{height:170px} .c-row{padding:6px 0} .c-top{padding-top:12px}
+  .hero{padding:20px 0 24px}
+}
+@media (max-width:1100px){
+  nav{display:none}
+  .hero .wrap{grid-template-columns:1fr;gap:34px}
+  .g-main{grid-template-columns:1fr}
+  .g-left{border-right:0;border-bottom:1px solid var(--line)}
+  .reports{grid-template-columns:repeat(2,1fr)}
+  .steps{grid-template-columns:repeat(2,1fr)}
+  .step:nth-child(2){border-right:0}
+  .step:nth-child(-n+2){border-bottom:1px solid var(--line)}
+  .types{grid-template-columns:repeat(2,1fr)}
+  .tok{grid-template-columns:1fr}
+}
+@media (max-width:760px){
+  .wrap{padding:0 16px}
+  .pill.net{display:none}
+  .hd-buy{display:none}
+  header .wrap{gap:12px}
+  h1{font-size:clamp(34px,10.4vw,48px);margin:14px 0 14px}
+  .lead{font-size:15px}
+  .hero{padding:22px 0 30px;min-height:0}
+  .cta{margin-top:20px}
+  .cta .btn{flex:1 1 auto}
+  .facts b{font-size:17px}
+  .facts{margin-top:24px}
+  .vault{height:190px}
+  .c-cta{flex-direction:column;align-items:stretch}
+  section.blk{padding:72px 0}
+  .g-stats{grid-template-columns:repeat(3,1fr)}
+  .g-stats div:nth-child(n+4){display:none}
+  .g-stats div:nth-child(3){border-right:0}
+  .g-stats b{font-size:16px}
+  .g-cv{height:320px}
+  .g-left{padding:12px}
+  .reports{grid-template-columns:1fr}
+  .steps{grid-template-columns:1fr}
+  .step{border-right:0!important;border-bottom:1px solid var(--line)}
+  .step:last-child{border-bottom:0}
+  .cmp{grid-template-columns:1fr}
+  .types{grid-template-columns:1fr}
+  .tp{grid-template-columns:1fr}
+  .tr{grid-template-columns:1fr 1fr;row-gap:6px;padding:14px 16px}
+  .tr.th{display:none}
+  .tr .c-prog{grid-column:1/-1}
+  .tr .c-ord{display:none}
+  .spec div{grid-template-columns:1fr;gap:6px}
+  .tok-l .coin{width:110px;height:110px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="bg-x"><i></i><i></i><i></i></div>
+
+<header>
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="FairCross">
+      <svg viewBox="0 0 28 28" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="27" height="27" rx="7" stroke="#2a2d35"/><path d="M5 7.5 14 14M5 20.5 14 14" stroke="#8c9eff" stroke-width="1.6" stroke-linecap="round"/><path d="M5 14h18" stroke="#ff8e6b" stroke-width="1.6" stroke-linecap="round" stroke-dasharray="1.6 3" /><path d="M14 14h9" stroke="#f4f1e8" stroke-width="2.2" stroke-linecap="round"/><circle cx="14" cy="14" r="2" fill="#f4f1e8"/></svg>
+      FAIRCROSS
+    </a>
+    <nav>
+      <a href="#cross">The cross</a>
+      <a href="#how">How it works</a>
+      <a href="#launches">Launches</a>
+      <a href="#orders">Order types</a>
+      <a href="#token">$FAIRCROSS</a>
+    </nav>
+    <div class="hd-r">
+      <span class="pill net"><span class="dot"></span>ROBINHOOD CHAIN</span>
+      <button class="tgl on" id="sfxBtn" aria-pressed="true">SOUND</button>
+      <button class="tgl" id="musBtn" aria-pressed="false">MUSIC</button>
+      <a class="btn primary hd-buy soon buyLink" href="#" id="buyBtn2">Buy</a>
+    </div>
+  </div>
+</header>
+
+<div class="tape"><div class="tape-in" id="tape">
+  <span>ONE WINDOW · <b>ONE PRICE</b></span>
+  <span>FIRST-BUYER EDGE <b>0.00%</b></span>
+  <span>ORDERS VISIBLE BEFORE THE CROSS <b>0</b></span>
+  <span>WINDOW LENGTH <b>5:00</b> · FIXED</span>
+  <span>BOTS ARE WELCOME · <em>THEY PAY WHAT EVERYONE PAYS</em></span>
+  <span>GAS WAR PRIZE <b>NONE</b></span>
+  <span>THE MARKET DOES NOT SEE <b>YOUR NEXT MOVE</b></span>
+  <span id="tapeLive">LAST CROSS <b>—</b></span>
+</div></div>
+
+<main id="top">
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <span class="kicker">Sealed launch venue · Robinhood Chain</span>
+      <h1>Every buyer in the window pays <i>one&nbsp;price.</i></h1>
+      <p class="lead">New meme tokens launch here through <b>sealed five-minute windows</b>. Nobody sees your order, nobody gets in first, and when the window closes <b>every buyer crosses at the same price</b>, the sniper included.</p>
+      <div class="cta">
+        <a class="btn primary soon" href="#" id="buyBtn">Buy $FAIRCROSS <span class="tag">SOON</span></a>
+        <a class="btn game" href="#cross"><span class="ar">▶</span> Clear a window yourself</a>
+        <a class="btn ghost" href="#" id="xBtn" target="_blank" rel="noopener" aria-label="FairCross on X">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.2 2.3h3.4l-7.4 8.4 8.7 11.5h-6.8l-5.3-7-6.1 7H1.3l7.9-9L.9 2.3h7l4.8 6.4 5.5-6.4Zm-1.2 17.9h1.9L7.1 4.2H5.1l11.9 16Z"/></svg>
+        </a>
+      </div>
+      <div class="ca" id="caBox" title="copy contract"><span>CA</span><b class="ca-val">announced at the first cross</b></div>
+      <div class="facts">
+        <div><b>0.00%</b><span>first-buyer edge</span></div>
+        <div><b>5:00</b><span>every window</span></div>
+        <div><b id="factSealed">0</b><span>orders you can see</span></div>
+      </div>
+    </div>
+
+    <div class="console" aria-label="Live venue console">
+      <div class="c-hd"><span>NEXT CROSS ON THE VENUE</span><span class="st" id="cSt"><i></i><span>COLLECTING</span></span></div>
+      <div class="c-top">
+        <div class="c-tok">launching<b id="cTok">$HAT</b><span class="mono" id="cWin">window 1</span></div>
+        <div class="c-timer"><small>CROSSES IN</small><span id="cTime">0:00</span></div>
+      </div>
+      <div class="vault" id="vault" role="button" aria-label="Seal an order">
+        <canvas id="vcv"></canvas>
+        <span class="hint">TAP THE VAULT TO SEAL AN ORDER</span>
+      </div>
+      <div class="c-rows">
+        <div class="c-row"><span>Sealed orders</span><b id="cSealed">0</b></div>
+        <div class="c-row"><span>Interest bands</span><span class="bands" id="cBands"></span></div>
+        <div class="c-row"><span>Last cross</span><b id="cLast">—</b></div>
+      </div>
+      <div class="c-cta">
+        <p><b>THE CROSS · 8 launch windows</b>Find the one price where nobody is left over, before the window closes.</p>
+        <a class="btn game" href="#cross"><span class="ar">▶</span> Play</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="blk" id="cross">
+  <div class="wrap">
+    <div class="sh">
+      <div><div class="n">01 — THE CROSS</div><h2>Clear the window <i>by hand.</i></h2></div>
+      <p>The venue does this in a millisecond, eight launches in a row. You get a few seconds per window, coarse interest bands instead of a book, and a meter that tells you who is left over at your price.</p>
+    </div>
+
+    <div class="g-shell">
+      <div class="g-stats">
+        <div><span>WINDOW</span><b id="sWin">1/8</b></div>
+        <div><span>CROSSES IN</span><b id="sTime">—</b></div>
+        <div><span>LAST FILL</span><b id="sAcc">—</b></div>
+        <div><span>ORDERS CROSSED</span><b id="sOrd">0</b></div>
+        <div><span>SNIPER EDGE</span><b>0.00%</b></div>
+      </div>
+      <div class="g-main">
+        <div class="g-left">
+          <div class="g-cv" id="gcvBox">
+            <canvas id="gcv"></canvas>
+            <div class="g-ov" id="gOv">
+              <h3 id="ovH">Eight launches. <i>One price each.</i></h3>
+              <p id="ovP">Orders arrive sealed. You only see how heavy the interest is around each price. Drag the price line until the meter sits in the middle, and hold it there while new orders keep landing. When the timer hits zero, the window crosses wherever your line is.</p>
+              <div class="rules"><span><i style="background:var(--buy)"></i>buy interest</span><span><i style="background:var(--sell)"></i>sell interest</span><span><i style="background:var(--cross)"></i>your price</span><span>82% of max volume to clear</span></div>
+            </div>
+          </div>
+          <div class="meter">
+            <div class="m-lab"><span>◀ SELLERS LEFT OVER</span><span>BALANCED</span><span>BUYERS LEFT OVER ▶</span></div>
+            <div class="m-cells" id="mCells"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <div class="m-say" id="mSay">Sellers left over means your price is too high. Buyers left over means it is too low.</div>
+          </div>
+          <div class="g-ctl">
+            <button id="gL" aria-label="Lower price">◀</button>
+            <button id="gGo">OPEN WINDOW</button>
+            <button id="gR" aria-label="Raise price">▶</button>
+          </div>
+        </div>
+        <div class="g-right">
+          <h4>LAUNCH SCHEDULE</h4>
+          <ul class="man" id="man"></ul>
+          <div class="log" id="log"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="reports" id="reports"></div>
+  </div>
+</section>
+
+<section class="blk" id="how">
+  <div class="wrap">
+    <div class="sh">
+      <div><div class="n">02 — HOW IT WORKS</div><h2>Four steps, <i>none of them public.</i></h2></div>
+      <p>Everything a sniper normally reads before it acts, the side, the size and the price, stays sealed until the moment it stops mattering.</p>
+    </div>
+    <div class="steps">
+      <div class="step"><div class="sn">01</div>
+        <svg viewBox="0 0 54 54" fill="none"><rect x="9" y="16" width="36" height="26" rx="3" stroke="#3a3e48"/><path d="M9 19l18 13 18-13" stroke="#8c9eff" stroke-width="1.4"/><circle cx="27" cy="36" r="5" fill="#111216" stroke="#f4f1e8" stroke-width="1.4"/><path d="M25 36h4" stroke="#f4f1e8" stroke-width="1.4"/></svg>
+        <h3>Seal</h3><p>You pick the token, the size and the most you are willing to pay. The order is sealed in your browser before it leaves, so the chain learns that an order exists and absolutely nothing else about it.</p></div>
+      <div class="step"><div class="sn">02</div>
+        <svg viewBox="0 0 54 54" fill="none"><circle cx="27" cy="27" r="17" stroke="#3a3e48"/><path d="M27 15v12l8 5" stroke="#f4f1e8" stroke-width="1.4" stroke-linecap="round"/><circle cx="10" cy="12" r="2" fill="#8c9eff"/><circle cx="44" cy="10" r="2" fill="#ff8e6b"/><circle cx="46" cy="42" r="2" fill="#8c9eff"/><circle cx="7" cy="40" r="2" fill="#ff8e6b"/></svg>
+        <h3>Collect</h3><p>The window stays open for five minutes and quietly collects every sealed order that shows up. There is no book to read and no queue to jump, so sending your transaction faster buys you exactly nothing.</p></div>
+      <div class="step"><div class="sn">03</div>
+        <svg viewBox="0 0 54 54" fill="none"><path d="M6 12 27 27M6 42 27 27M6 20 27 27M6 34 27 27" stroke="#8c9eff" stroke-width="1.2" opacity=".8"/><path d="M27 27h21" stroke="#f4f1e8" stroke-width="2.2" stroke-linecap="round"/><circle cx="27" cy="27" r="3.5" fill="#f4f1e8"/></svg>
+        <h3>Cross</h3><p>When the window closes, every order opens at once and the venue finds the single price where the most volume trades. Everyone who is in, from the first bot to the last human, fills at that price.</p></div>
+      <div class="step"><div class="sn">04</div>
+        <svg viewBox="0 0 54 54" fill="none"><rect x="10" y="12" width="34" height="32" rx="4" stroke="#3a3e48"/><path d="M17 22h20M17 29h14M17 36h9" stroke="#8b8f98" stroke-width="1.3" stroke-linecap="round"/><path d="m32 35 3.5 3.5L42 31" stroke="#7ee0b0" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <h3>Settle</h3><p>Fills and leftovers land back in your balance right after the cross. Anything that did not fill either rolls into the next window or comes home to you, whichever you chose when you sealed it.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="blk" id="compare">
+  <div class="wrap">
+    <div class="sh">
+      <div><div class="n">03 — SAME TOKEN, TWO LAUNCHES</div><h2>Fast used to be <i>the whole game.</i></h2></div>
+      <p>A public launch pays whoever lands in the first block and then sells into everyone else. A sealed window pays nobody in particular, which turns out to be exactly the point.</p>
+    </div>
+    <div class="cmp">
+      <div class="cmp-c">
+        <div class="cmp-h"><b>PUBLIC LAUNCH</b><span id="cmpT1">BLOCK 0</span></div>
+        <canvas id="cmp1"></canvas>
+        <div class="cmp-s">
+          <div><span>Sniper entry</span><b>0.0000061</b></div>
+          <div><span>Average buyer entry</span><b>0.0000390</b></div>
+          <div><span>Sniper edge</span><b class="bad">+539%</b></div>
+        </div>
+      </div>
+      <div class="cmp-c">
+        <div class="cmp-h"><b>FAIRCROSS LAUNCH</b><span id="cmpT2">WINDOW 1</span></div>
+        <canvas id="cmp2"></canvas>
+        <div class="cmp-s">
+          <div><span>Sniper entry</span><b>0.0000212</b></div>
+          <div><span>Average buyer entry</span><b>0.0000212</b></div>
+          <div><span>Sniper edge</span><b class="good">0.00%</b></div>
+        </div>
+      </div>
+    </div>
+    <div class="cmp-bar"><button class="btn ghost" id="cmpReplay">↻ Replay both launches</button></div>
+  </div>
+</section>
+
+<section class="blk" id="launches">
+  <div class="wrap">
+    <div class="sh">
+      <div><div class="n">04 — LIVE WINDOWS</div><h2>Launching <i>right now.</i></h2></div>
+      <p>Every launch runs its own five-minute window, staggered so the venue crosses something roughly every forty seconds. Sealed counts are rounded, because exact counts are also a kind of information.</p>
+    </div>
+    <div class="tbl" id="ledger">
+      <div class="tr th"><span>TOKEN</span><span>WINDOW</span><span class="c-ord">SEALED ORDERS</span><span class="c-prog">PROGRESS</span><span>STATUS</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="blk" id="orders">
+  <div class="wrap">
+    <div class="sh">
+      <div><div class="n">05 — ORDER TYPES</div><h2>Six ways to <i>stay quiet.</i></h2></div>
+      <p>Every type below goes through the same window and fills at the same clearing price. They only change how much of you shows up, and when.</p>
+    </div>
+    <div class="types">
+      <div class="type"><div class="tt"><h3>Standard</h3><code>STD</code></div><p>Fills at the clearing price as long as the clearing price is under your cap. Whatever does not fill comes back to you after the window settles, untouched and still unseen.</p></div>
+      <div class="type"><div class="tt"><h3>Split</h3><code>SPLIT 2–12</code></div><p>Cuts one order into equal parts across two to twelve windows. Useful when you want in, but not all at once, and definitely not in a way anyone can see coming.</p></div>
+      <div class="type"><div class="tt"><h3>Roll</h3><code>ROLL</code></div><p>Keeps the unfilled part sealed and carries it into the next windows, up to twelve in a row. It never shows up anywhere in between, not even as a rumour.</p></div>
+      <div class="type"><div class="tt"><h3>All or none</h3><code>AON</code></div><p>Fills completely at the cross or does not fill at all. Built for people who have already made a decision and have no interest in owning half of it.</p></div>
+      <div class="type"><div class="tt"><h3>Late</h3><code>NEXT</code></div><p>Arrives while a window is already closing and joins the next one without a word. Being late costs exactly what being early costs, which is the entire idea of this place.</p></div>
+      <div class="type"><div class="tt"><h3>Block</h3><code>BLOCK</code></div><p>A large order that crosses whole against a matching counter-order at the clearing price. It still waits in the window like everyone else, size does not buy a side door.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="blk" id="transparency">
+  <div class="wrap">
+    <div class="sh">
+      <div><div class="n">06 — WHAT THE CHAIN SEES</div><h2>Public where it helps. <i>Sealed where it counts.</i></h2></div>
+      <p>The venue does not make you invisible. It hides the part of your order that someone else could trade against, and publishes the rest once it is safe to.</p>
+    </div>
+    <div class="tp">
+      <div class="tp-c"><h3><i style="background:var(--ok)"></i>PUBLIC</h3><ul>
+        <li>That a window exists and when it closes<span>always</span></li>
+        <li>How many orders it collected, rounded<span>live</span></li>
+        <li>The clearing price and total volume<span>after cross</span></li>
+        <li>Deposits into and withdrawals out of the venue<span>on chain</span></li>
+      </ul></div>
+      <div class="tp-c sealed"><h3><i style="background:var(--buy)"></i>SEALED</h3><ul>
+        <li>Which side of the trade you are on<span id="sd1">████</span></li>
+        <li>How much you want<span id="sd2">████</span></li>
+        <li>The most you are willing to pay<span id="sd3">████</span></li>
+        <li>Which deposit paid for which order<span id="sd4">████</span></li>
+      </ul></div>
+    </div>
+  </div>
+</section>
+
+<section class="blk" id="token">
+  <div class="wrap">
+    <div class="sh">
+      <div><div class="n">07 — THE VENUE TOKEN</div><h2>$FAIRCROSS <i>went through the window too.</i></h2></div>
+      <p>The token that earns from every cross launched the same way every other token here does, sealed, in one window, at one price for everybody.</p>
+    </div>
+    <div class="tok">
+      <div class="tok-l">
+        <div><div class="sh" style="margin:0"><div class="n">TICKER</div></div><div class="big">$FAIRCROSS</div></div>
+        <button class="coin" id="coinBtn" aria-label="Seal a coin">
+          <svg viewBox="0 0 28 28" fill="none"><path d="M5 7.5 14 14M5 20.5 14 14" stroke="#8c9eff" stroke-width="1.4" stroke-linecap="round"/><path d="M14 14h9" stroke="#f4f1e8" stroke-width="2" stroke-linecap="round"/><circle cx="14" cy="14" r="1.8" fill="#f4f1e8"/></svg>
+        </button>
+        <a class="btn primary soon buyLink" href="#" id="buyBtn3">Buy $FAIRCROSS <span class="tag">SOON</span></a>
+      </div>
+      <dl class="spec">
+        <div><dt>SUPPLY</dt><dd><b>1,000,000,000 $FAIRCROSS</b>, all of it launched through the venue's very first window. The team sealed its orders like everybody else and crossed at the same price, which made for a strange meeting.</dd></div>
+        <div><dt>THE FEE</dt><dd>Every cross charges a small <b>venue fee on both sides</b> of each fill. It is the same for the first order in the window and the last one, because on this venue there is no such thing as a first order.</dd></div>
+        <div><dt>WHERE IT GOES</dt><dd><b>Half goes to $FAIRCROSS holders</b> at the moment of each cross and the other half is burned. Both halves show up on chain after settlement, together with everything else that has already happened.</dd></div>
+        <div><dt>OWNERSHIP</dt><dd>The launch contract is <b>renounced</b> and the window length is fixed at five minutes. Nobody can make a window shorter for a friend, and nobody has tried twice.</dd></div>
+      </dl>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <a class="brand" href="#top">
+      <svg viewBox="0 0 28 28" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="27" height="27" rx="7" stroke="#2a2d35"/><path d="M5 7.5 14 14M5 20.5 14 14" stroke="#8c9eff" stroke-width="1.6" stroke-linecap="round"/><path d="M14 14h9" stroke="#f4f1e8" stroke-width="2.2" stroke-linecap="round"/><circle cx="14" cy="14" r="2" fill="#f4f1e8"/></svg>
+      FAIRCROSS
+    </a>
+    <p>Sealed launch windows on Robinhood Chain. One window, one price. © 2026</p>
+    <div class="fl2"><a href="#" class="xLink" target="_blank" rel="noopener">X</a><a href="#cross">The cross</a><a href="#token">$FAIRCROSS</a></div>
+  </div>
+</footer>
+
+<div id="win" role="dialog" aria-modal="true" aria-labelledby="wH">
+  <div class="w-card">
+    <div class="n">ALL WINDOWS SETTLED</div>
+    <h3 id="wH">Eight launches. <i>Nobody got in first.</i></h3>
+    <p>Every bot that showed up paid exactly what the last person on a phone paid. You found the price by hand, which the venue does forty times an hour without asking anyone.</p>
+    <div class="w-grid">
+      <div><span>Average fill</span><b id="wAcc">—</b></div>
+      <div><span>Orders crossed</span><b id="wOrd">—</b></div>
+      <div><span>Thin crosses</span><b id="wFail">—</b></div>
+      <div><span>Sniper edge</span><b>0.00%</b></div>
+    </div>
+    <div class="w-btns"><a class="btn primary soon buyLink" href="#" id="buyBtn4">Buy $FAIRCROSS</a><button class="btn ghost" id="wAgain">Run it again</button><button class="btn ghost" id="wClose">Close</button></div>
+  </div>
+</div>
+<div id="rain"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============ SETTINGS ============ */
+window.CONTRACT = "";      /* адрес контракта */
+window.TWITTER  = "";      /* ссылка на X */
+window.BUY_URL  = "";      /* ссылка на покупку — пусто, пока Олег не даст */
+/* ================================== */
+
+var CA=(window.CONTRACT||"").trim(), TW=(window.TWITTER||"").trim(), BUY=(window.BUY_URL||"").trim();
+if(CA){
+  document.querySelectorAll('.ca-val').forEach(function(e){ e.textContent=CA.slice(0,6)+'…'+CA.slice(-4); });
+  document.getElementById('caBox').addEventListener('click',function(){
+    var b=this.querySelector('b'), old=b.textContent;
+    navigator.clipboard.writeText(CA).then(function(){ b.textContent='copied'; setTimeout(function(){ b.textContent=old; },1200); });
+  });
+}
+if(TW){ document.querySelectorAll('#xBtn,.xLink').forEach(function(a){ a.href=TW; }); }
+else{ document.querySelectorAll('#xBtn,.xLink').forEach(function(a){ a.removeAttribute('target'); a.addEventListener('click',function(e){ e.preventDefault(); toast("X account opens with the first cross."); }); }); }
+document.querySelectorAll('#buyBtn,.buyLink').forEach(function(buy){
+  if(BUY){ buy.href=BUY; buy.target='_blank'; buy.rel='noopener'; buy.classList.remove('soon'); var t=buy.querySelector('.tag'); if(t) t.remove(); }
+  else{ buy.addEventListener('click',function(e){ e.preventDefault(); toast("The $FAIRCROSS window has not opened yet."); tone(220,180,.18,'sine',.05); }); }
+});
+</script>
+
+<script>
+(function(){
+"use strict";
+var $=function(id){return document.getElementById(id);};
+var clamp=function(v,a,b){return v<a?a:v>b?b:v;};
+var rnd=Math.random;
+var DPR=Math.min(2,window.devicePixelRatio||1);
+
+/* ---------- toast ---------- */
+var tt=null;
+window.toast=function(m){ var t=$('toast'); t.textContent=m; t.classList.add('on'); clearTimeout(tt); tt=setTimeout(function(){t.classList.remove('on');},2200); };
+
+/* ---------- audio ---------- */
+var AC=null, sfxOn=true, vol=1;
+function ac(){
+  if(!AC){ try{ AC=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ return null; } }
+  if(AC.state==='suspended') AC.resume();
+  return AC;
+}
+window.tone=function(f1,f2,dur,type,g){
+  if(!sfxOn) return; var c=ac(); if(!c) return;
+  var o=c.createOscillator(), gg=c.createGain(), t=c.currentTime;
+  o.type=type||'sine'; o.frequency.setValueAtTime(f1,t);
+  if(f2&&f2!==f1) o.frequency.exponentialRampToValueAtTime(f2,t+dur);
+  gg.gain.setValueAtTime(.0001,t); gg.gain.exponentialRampToValueAtTime((g||.06)*vol,t+.012);
+  gg.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(gg); gg.connect(c.destination); o.start(t); o.stop(t+dur+.05);
+};
+function noise(dur,freq,g,q){
+  if(!sfxOn) return; var c=ac(); if(!c) return;
+  var len=Math.floor(c.sampleRate*dur), b=c.createBuffer(1,len,c.sampleRate), d=b.getChannelData(0);
+  for(var i=0;i<len;i++) d[i]=(rnd()*2-1)*(1-i/len);
+  var s=c.createBufferSource(); s.buffer=b;
+  var f=c.createBiquadFilter(); f.type='bandpass'; f.frequency.value=freq||3000; f.Q.value=q||1.2;
+  var gg=c.createGain(); gg.gain.value=(g||.05)*vol;
+  s.connect(f); f.connect(gg); gg.connect(c.destination); s.start();
+}
+var S={
+  seal:function(){ noise(.05,2400,.09,2); tone(880,1320,.09,'sine',.05); },
+  tick:function(){ noise(.02,5200,.03,4); },
+  cross:function(){ tone(523.25,523.25,.9,'sine',.05); setTimeout(function(){tone(783.99,783.99,.9,'sine',.04);},70); setTimeout(function(){tone(1046.5,1046.5,1.1,'sine',.03);},140); },
+  good:function(){ [659.25,830.61,987.77,1318.5].forEach(function(f,i){ setTimeout(function(){tone(f,f,.35,'triangle',.05);},i*70); }); },
+  bad:function(){ tone(220,150,.35,'sawtooth',.03); tone(233,160,.35,'sine',.04); },
+  open:function(){ tone(330,660,.2,'sine',.05); noise(.12,900,.04,.8); },
+  whale:function(){ tone(90,60,.5,'sine',.1); noise(.3,300,.05,.7); },
+  snipe:function(){ tone(1800,2600,.06,'square',.02); setTimeout(function(){tone(1800,2600,.06,'square',.02);},80); },
+  coin:function(){ tone(1568,2093,.08,'triangle',.04); setTimeout(function(){tone(2093,2637,.1,'triangle',.03);},60); }
+};
+
+/* music: minimal clock ambient, D dorian, 100 bpm */
+var MU={on:false,t:null,step:0,next:0,g:null};
+var STEP=60/100/2;
+var MEL=[587.33,0,440,0,523.25,0,440,392,0,440,0,329.63,392,0,293.66,0];
+var MEL2=[698.46,0,523.25,0,587.33,0,523.25,440,0,523.25,0,392,440,0,349.23,0];
+var PADS=[[146.83,220,261.63,329.63],[116.54,174.61,220,293.66],[130.81,196,246.94,329.63],[110,164.81,220,277.18]];
+var BASS=[73.42,58.27,65.41,55];
+function mn(f,at,dur,type,g,cut){
+  var c=ac(); if(!c||!MU.g) return;
+  var o=c.createOscillator(), gg=c.createGain(), fl=c.createBiquadFilter();
+  o.type=type; o.frequency.value=f; fl.type='lowpass'; fl.frequency.value=cut||2000;
+  gg.gain.setValueAtTime(.0001,at); gg.gain.exponentialRampToValueAtTime(g,at+.012); gg.gain.exponentialRampToValueAtTime(.0001,at+dur);
+  o.connect(fl); fl.connect(gg); gg.connect(MU.g); o.start(at); o.stop(at+dur+.05);
+}
+function pad(fs,at,dur){
+  var c=ac(); if(!c||!MU.g) return;
+  fs.forEach(function(f){
+    var o=c.createOscillator(), gg=c.createGain(); o.type='sine'; o.frequency.value=f; o.detune.value=(rnd()-.5)*8;
+    gg.gain.setValueAtTime(.0001,at); gg.gain.linearRampToValueAtTime(.012,at+1.2); gg.gain.linearRampToValueAtTime(.0001,at+dur);
+    o.connect(gg); gg.connect(MU.g); o.start(at); o.stop(at+dur+.1);
+  });
+}
+function mtick(at,acc){
+  var c=ac(); if(!c||!MU.g) return;
+  var len=Math.floor(c.sampleRate*.03), b=c.createBuffer(1,len,c.sampleRate), d=b.getChannelData(0);
+  for(var i=0;i<len;i++) d[i]=(rnd()*2-1)*Math.pow(1-i/len,3);
+  var s=c.createBufferSource(); s.buffer=b; var f=c.createBiquadFilter(); f.type='highpass'; f.frequency.value=6000;
+  var gg=c.createGain(); gg.gain.value=acc?.05:.022; s.connect(f); f.connect(gg); gg.connect(MU.g); s.start(at);
+}
+function musSchedule(){
+  var c=ac(); if(!c) return;
+  while(MU.next < c.currentTime+.5){
+    var st=MU.step, i=st%16, bar=Math.floor(st/16)%4, at=Math.max(MU.next,c.currentTime+.02);
+    var mel=(Math.floor(st/64)%2)?MEL2:MEL;
+    if(mel[i] && !(bar===3&&i>10)) mn(mel[i],at,.55,'sine',.035,2400);
+    if(mel[i] && i%4===0) mn(mel[i]*2,at+STEP*.5,.3,'sine',.008,4000);
+    if(i===0){ pad(PADS[bar],at,STEP*16+.4); mn(BASS[bar],at,STEP*6,'triangle',.07,300); }
+    if(i===8) mn(BASS[bar],at,STEP*4,'triangle',.05,300);
+    if(i%2===0) mtick(at,i%4===0);
+    if(i===0 && bar===0 && st>0) mn(1567.98,at,1.6,'sine',.012,5000);
+    MU.next+=STEP; MU.step++;
+  }
+}
+function musStart(){
+  var c=ac(); if(!c) return;
+  MU.g=c.createGain(); MU.g.gain.value=.0001; MU.g.connect(c.destination);
+  MU.g.gain.exponentialRampToValueAtTime(.9,c.currentTime+1.2);
+  MU.on=true; MU.step=0; MU.next=c.currentTime+.1;
+  clearInterval(MU.t); MU.t=setInterval(musSchedule,100);
+  $('musBtn').classList.add('on'); $('musBtn').setAttribute('aria-pressed','true');
+}
+function musStop(){
+  MU.on=false; clearInterval(MU.t); MU.t=null;
+  if(MU.g&&AC){ var g=MU.g; g.gain.setTargetAtTime(.0001,AC.currentTime,.2); setTimeout(function(){ try{g.disconnect();}catch(e){} },1200); }
+  MU.g=null;
+  $('musBtn').classList.remove('on'); $('musBtn').setAttribute('aria-pressed','false');
+}
+document.addEventListener('visibilitychange',function(){
+  if(document.hidden&&MU.on&&MU.t){ clearInterval(MU.t); MU.t=null; }
+  else if(!document.hidden&&MU.on&&!MU.t&&AC){ MU.next=AC.currentTime+.1; MU.t=setInterval(musSchedule,100); }
+});
+$('musBtn').addEventListener('click',function(){ if(MU.on) musStop(); else musStart(); });
+$('sfxBtn').addEventListener('click',function(){ sfxOn=!sfxOn; this.classList.toggle('on',sfxOn); this.setAttribute('aria-pressed',String(sfxOn)); if(sfxOn) S.tick(); });
+var firstDone=false;
+function firstTouch(e){
+  if(firstDone) return;
+  var t=e.target; if(t&&t.closest&&t.closest('#musBtn,#sfxBtn')) return;
+  firstDone=true; ['pointerdown','keydown','touchstart','wheel'].forEach(function(n){ document.removeEventListener(n,firstTouch,true); });
+  if(!MU.on) musStart();
+}
+['pointerdown','keydown','touchstart','wheel'].forEach(function(n){ document.addEventListener(n,firstTouch,true); });
+
+/* ---------- coin rain ---------- */
+function rainCoin(){
+  var R=$('rain'), d=document.createElement('div'); d.className='coin-p';
+  var x=rnd()*innerWidth, y=-30; d.style.left=x+'px'; d.style.top=y+'px'; R.appendChild(d);
+  var vx=(rnd()-.5)*3, vy=2+rnd()*4, n=0, rot=(rnd()-.5)*14, px=0, py=0;
+  (function stp(){
+    n++; vy+=.25; px+=vx; py+=vy;
+    d.style.transform='translate('+px+'px,'+py+'px) rotateY('+(n*rot)+'deg)';
+    if(py>innerHeight+60||n>260){ d.remove(); return; }
+    requestAnimationFrame(stp);
+  })();
+}
+function rain(n){ for(var i=0;i<n;i++) setTimeout(rainCoin,i*28); }
+
+/* ---------- tape ---------- */
+(function(){ var t=$('tape'); t.innerHTML=t.innerHTML+t.innerHTML.replace('id="tapeLive"','class="tapeLive2"'); })();
+/* ---------- fmt ---------- */
+function fp(v){ return v.toFixed(7); }
+function fmtT(s){ s=Math.max(0,Math.ceil(s)); return Math.floor(s/60)+':'+('0'+(s%60)).slice(-2); }
+function comma(n){ return Math.round(n).toLocaleString('en-US'); }
+
+/* ---------- ledger (real clock) ---------- */
+var LED=[
+  {t:'$HAT',base:.0000233},{t:'$DESK',base:.0000318},{t:'$SPOON',base:.0000147},{t:'$ORBIT',base:.0000512},
+  {t:'$TAXI',base:.0000276},{t:'$GLUE',base:.0000094},{t:'$CABLE',base:.0000401},{t:'$PARADE',base:.0000188}
+];
+var PER=300, OFF=PER/LED.length, T0=Date.UTC(2026,8,1)/1000;
+var ledEl=$('ledger');
+LED.forEach(function(L,i){
+  var r=document.createElement('div'); r.className='tr';
+  r.innerHTML='<span class="tk">'+L.t+'</span><span class="mn lw">—</span><span class="mn c-ord lo">—</span><span class="c-prog"><span class="prog"><i></i></span></span><span class="stt"><i></i><span class="ls">—</span></span>';
+  ledEl.appendChild(r); L.el=r; L.last=null; L.prevEl=null;
+  L.seed=(i*7919)%97;
+});
+function hash(n){ var x=Math.sin(n*12.9898)*43758.5453; return x-Math.floor(x); }
+function ledPrice(L,win){ return L.base*(.82+hash(win+L.seed)*.46); }
+function ledOrders(L,win,el){ var tot=600+Math.floor(hash(win*3+L.seed)*1400); return Math.floor(tot*Math.pow(el/PER,.8)); }
+var heroCur=null;
+function ledTick(){
+  var now=Date.now()/1000, soonest=null;
+  LED.forEach(function(L,i){
+    var t=now-T0+i*OFF, win=Math.floor(t/PER)+1, el=t%PER, rem=PER-el;
+    if(L.win!==undefined && win!==L.win){ onCross(L,L.win); }
+    L.win=win; L.rem=rem; L.el0=el;
+    var ord=ledOrders(L,win,el);
+    L.el.querySelector('.lw').textContent='#'+comma(win);
+    L.el.querySelector('.lo').textContent='~'+comma(Math.round(ord/10)*10);
+    L.el.querySelector('.prog i').style.width=(el/PER*100)+'%';
+    var st=L.el.querySelector('.stt'), ls=L.el.querySelector('.ls');
+    if(el<22 && L.last){ st.classList.add('x'); ls.textContent='CROSSED '+fp(L.last); }
+    else { st.classList.remove('x'); ls.textContent='SEALED · '+fmtT(rem); }
+    if(!soonest||rem<soonest.rem) soonest=L;
+  });
+  // hero
+  var H=soonest; heroCur=H;
+  $('cTok').textContent=H.t; $('cWin').textContent='window #'+comma(H.win);
+  $('cTime').textContent=fmtT(H.rem);
+  var sealed=ledOrders(H,H.win,H.el0)+extraSeal;
+  $('cSealed').textContent=comma(sealed);
+  $('factSealed').textContent='0';
+}
+LED.forEach(function(L,i){ var t=Date.now()/1000-T0+i*OFF, win=Math.floor(t/PER); L.last=ledPrice(L,win); });
+var extraSeal=0;
+function setTape(L){ var h='LAST CROSS <b>'+L.t+' @ '+fp(L.last)+' ETH</b>'; $('tapeLive').innerHTML=h; document.querySelectorAll('.tapeLive2').forEach(function(e){ e.innerHTML=h; }); }
+function onCross(L,win){
+  L.last=ledPrice(L,win);
+  L.el.classList.remove('flash'); void L.el.offsetWidth; L.el.classList.add('flash');
+  $('cLast').textContent=L.t+' @ '+fp(L.last);
+  setTape(L);
+  extraSeal=0;
+  vaultCross(L);
+}
+(function initLast(){
+  var best=null, now=Date.now()/1000;
+  LED.forEach(function(L,i){ var el=(now-T0+i*OFF)%PER; if(!best||el<best.el) best={L:L,el:el}; });
+  $('cLast').textContent=best.L.t+' @ '+fp(best.L.last);
+  setTape(best.L);
+})();
+setInterval(ledTick,250);
+
+/* bands in console */
+var bandsEl=$('cBands'); var bandEls=[];
+for(var bi=0;bi<12;bi++){ var e=document.createElement('i'); if(bi>=6) e.className='s'; bandsEl.appendChild(e); bandEls.push(e); }
+function bandsTick(){ bandEls.forEach(function(e,i){ var q=[4,9,16][Math.floor(rnd()*3)]; e.style.height=q+'px'; }); }
+bandsTick(); setInterval(bandsTick,1600);
+
+/* ---------- vault canvas (hero) ---------- */
+var vc=$('vcv'), vx=vc.getContext('2d'), VW=0, VH=0;
+var parts=[], bursts=[], crossFx=null;
+function vResize(){ var r=vc.getBoundingClientRect(); VW=r.width; VH=r.height; vc.width=Math.round(VW*DPR); vc.height=Math.round(VH*DPR); }
+function spawnPart(){
+  var side=rnd()<.55?0:1;
+  parts.push({side:side,x:side?VW+10:-10,y:VH*(.12+rnd()*.76),tx:VW*.5+(rnd()-.5)*VW*.2,ty:VH*.5+(rnd()-.5)*VH*.34,t:0,s:2+rnd()*2.5,life:0,ph:rnd()*6.28});
+}
+function vaultCross(L){
+  crossFx={t:0,label:L.t+'  ·  '+fp(L.last)};
+  var st=$('cSt'); st.classList.add('x'); st.querySelector('span').textContent='CROSSED';
+  setTimeout(function(){ st.classList.remove('x'); st.querySelector('span').textContent='COLLECTING'; },3000);
+  S.cross();
+}
+window.__vaultCross=function(){ vaultCross(LED[0]); };
+function vDraw(){
+  var c=vx; c.setTransform(DPR,0,0,DPR,0,0); c.clearRect(0,0,VW,VH);
+  var cx=VW/2, cy=VH/2, bw=Math.min(VW*.34,210), bh=VH*.56;
+  // guide lines
+  c.strokeStyle='rgba(140,158,255,.10)'; c.lineWidth=1;
+  for(var k=0;k<5;k++){ var yy=VH*(.18+k*.16); c.beginPath(); c.moveTo(0,yy); c.bezierCurveTo(VW*.25,yy,VW*.3,cy,cx-bw/2,cy); c.stroke(); }
+  c.strokeStyle='rgba(255,142,107,.09)';
+  for(k=0;k<5;k++){ yy=VH*(.18+k*.16); c.beginPath(); c.moveTo(VW,yy); c.bezierCurveTo(VW*.75,yy,VW*.7,cy,cx+bw/2,cy); c.stroke(); }
+  // vault box
+  var cf=crossFx?crossFx.t:0;
+  c.fillStyle='rgba(9,9,11,.85)'; c.strokeStyle='rgba(58,62,72,1)';
+  rr(c,cx-bw/2,cy-bh/2,bw,bh,10); c.fill(); c.stroke();
+  c.fillStyle='#5a5e67'; c.font='500 9px Geist Mono, monospace'; c.textAlign='center';
+  c.fillText('SEALED',cx,cy-bh/2+15);
+  // particles
+  if(parts.length<120 && rnd()<.55) spawnPart();
+  for(var i=parts.length-1;i>=0;i--){
+    var p=parts[i]; p.t+=.012*(1+p.s*.1);
+    var e=Math.min(1,p.t);
+    var ex=1-Math.pow(1-e,3);
+    var x=p.x+(p.tx-p.x)*ex, y=p.y+(p.ty-p.y)*ex;
+    if(e>=1){ p.life+=.016; x=p.tx+Math.cos(p.ph+p.life*1.3)*3; y=p.ty+Math.sin(p.ph+p.life*1.1)*3; }
+    if(crossFx && crossFx.t>.2){ var q=Math.min(1,(crossFx.t-.2)/.35); y=y+(cy-y)*q; x=x+((cx-bw/2+ (i%40)/40*bw) - x)*q*.6; }
+    var inside=e>.85;
+    c.fillStyle=inside?'rgba(236,234,228,'+(.28+.2*Math.sin(p.life*3+p.ph))+')':(p.side?'rgba(255,142,107,.9)':'rgba(140,158,255,.9)');
+    if(crossFx && crossFx.t>.2) c.fillStyle='rgba(244,241,232,.95)';
+    c.fillRect(x-p.s/2,y-p.s/2,p.s,p.s);
+    if(p.life>9) parts.splice(i,1);
+  }
+  // cross effect
+  if(crossFx){
+    crossFx.t+=.012; var t=crossFx.t;
+    if(t>.2){
+      var a=t<.6?(t-.2)/.4:Math.max(0,1-(t-.6)/.9);
+      c.strokeStyle='rgba(244,241,232,'+a+')'; c.lineWidth=2;
+      c.beginPath(); c.moveTo(0,cy); c.lineTo(VW,cy); c.stroke();
+      c.fillStyle='rgba(244,241,232,'+a*.08+')'; c.fillRect(0,cy-26,VW,52);
+      c.fillStyle='rgba(244,241,232,'+a+')'; c.font='600 12px Geist Mono, monospace'; c.textAlign='center';
+      c.fillText('ONE PRICE  ·  '+crossFx.label,cx,Math.min(VH-8,cy+bh/2+18));
+    }
+    if(t>.62 && !crossFx.cleared){ crossFx.cleared=true; parts.length=0; }
+    if(t>1.6) crossFx=null;
+  }
+  // bursts
+  for(i=bursts.length-1;i>=0;i--){
+    var b=bursts[i]; b.vy+=.22; b.x+=b.vx; b.y+=b.vy; b.n++;
+    var al=Math.max(0,1-b.n/60);
+    c.save(); c.translate(b.x,b.y); c.rotate(b.n*b.r);
+    c.fillStyle=b.col.replace('A',al); c.fillRect(-4,-4,8,8);
+    c.fillStyle='rgba(9,9,11,'+al+')'; c.fillRect(-2.5,-.6,5,1.2);
+    c.restore();
+    if(b.n>60) bursts.splice(i,1);
+  }
+}
+function rr(c,x,y,w,h,r){ c.beginPath(); c.moveTo(x+r,y); c.arcTo(x+w,y,x+w,y+h,r); c.arcTo(x+w,y+h,x,y+h,r); c.arcTo(x,y+h,x,y,r); c.arcTo(x,y,x+w,y,r); c.closePath(); }
+var sealClicks=0;
+$('vault').addEventListener('pointerdown',function(e){
+  var r=vc.getBoundingClientRect(), x=e.clientX-r.left, y=e.clientY-r.top;
+  for(var i=0;i<16;i++){
+    var col=i%3===0?'rgba(244,241,232,A)':(i%2?'rgba(140,158,255,A)':'rgba(255,142,107,A)');
+    bursts.push({x:x,y:y,vx:(rnd()-.5)*8,vy:-3-rnd()*5,n:0,r:(rnd()-.5)*.3,col:col});
+  }
+  for(i=0;i<4;i++){ parts.push({side:rnd()<.5?0:1,x:x,y:y,tx:VW*.5+(rnd()-.5)*VW*.2,ty:VH*.5+(rnd()-.5)*VH*.34,t:0,s:3,life:0,ph:rnd()*6.28}); }
+  extraSeal++; sealClicks++;
+  var f=document.createElement('span'); f.className='fl'; f.textContent='+1 SEALED'; f.style.left=(x-30)+'px'; f.style.top=(y-20)+'px';
+  this.appendChild(f); setTimeout(function(){f.remove();},1000);
+  S.seal(); if(sealClicks%3===0) S.coin();
+  if(sealClicks%12===0){ rain(24); toast("Twelve orders sealed. Nobody saw a single one."); }
+});
+
+/* ---------- compare canvases ---------- */
+var cmp1=$('cmp1'), cmp2=$('cmp2'), cmpT=0, cmpRun=true;
+function cmpSize(cv){ var r=cv.getBoundingClientRect(); cv.width=Math.round(r.width*DPR); cv.height=Math.round(r.height*DPR); return {w:r.width,h:r.height}; }
+var CS1={w:0,h:0}, CS2={w:0,h:0};
+var pubPath=[], fairPath=[];
+(function gen(){
+  var N=120, v=.12;
+  for(var i=0;i<N;i++){
+    var x=i/(N-1), y;
+    if(x<.08) y=.08+x*1.2;
+    else if(x<.3) y=.18+Math.pow((x-.08)/.22,1.4)*.72;
+    else if(x<.42) y=.9-(x-.3)/.12*.6+(hash(i)-.5)*.05;
+    else y=.3-(x-.42)*.35+(hash(i*2)-.5)*.06;
+    pubPath.push(clamp(y,.02,.98));
+    var z=x<.12?.42:.42+Math.sin(x*9)*.05+(x-.12)*.12+(hash(i*5)-.5)*.035;
+    fairPath.push(clamp(z,.02,.98));
+  }
+})();
+function drawCmp(cv,S0,path,pub,t){
+  var c=cv.getContext('2d'), w=S0.w, h=S0.h; c.setTransform(DPR,0,0,DPR,0,0); c.clearRect(0,0,w,h);
+  var pl=16, pr=16, pt=24, pb=26, W=w-pl-pr, H=h-pt-pb;
+  c.strokeStyle='#1e2026'; c.lineWidth=1;
+  for(var g=0;g<=4;g++){ var y=pt+H*g/4; c.beginPath(); c.moveTo(pl,y); c.lineTo(w-pr,y); c.stroke(); }
+  var n=Math.floor(clamp(t,0,1)*(path.length-1));
+  c.lineWidth=1.8; c.strokeStyle=pub?'#ff8e6b':'#f4f1e8'; c.beginPath();
+  for(var i=0;i<=n;i++){ var x=pl+W*i/(path.length-1), yy=pt+H*(1-path[i]); if(i) c.lineTo(x,yy); else c.moveTo(x,yy); }
+  c.stroke();
+  c.font='500 10px Geist Mono, monospace'; c.textAlign='left';
+  if(pub){
+    // sniper buys at bottom
+    var sx=pl+W*.02, sy=pt+H*(1-.1);
+    if(t>.02){ c.fillStyle='#ff8e6b'; for(var k=0;k<6;k++) c.fillRect(sx+k*5,sy-2+(k%2)*3,4,4); c.fillText('SNIPERS BUY · BLOCK 0',sx,sy+18>h-6?sy-12:sy+18); }
+    if(t>.2){ c.fillStyle='#8c9eff'; for(k=0;k<14;k++){ var ix=Math.floor(path.length*(.16+k*.01)); if(ix/(path.length-1)>t) break; c.fillRect(pl+W*ix/(path.length-1)-2,pt+H*(1-path[ix])-2,4,4);} }
+    if(t>.33){ var ax=pl+W*.31, ay=pt+H*(1-.88); c.fillStyle='#ff8e6b'; c.fillText('SNIPERS SELL INTO BUYERS',Math.min(ax+8,w-170),ay+4); }
+    $('cmpT1').textContent=t<.1?'BLOCK 0':t<.3?'BUYERS ARRIVE':t<.45?'DUMP':'AFTER';
+  } else {
+    var wx=pl+W*.12;
+    c.fillStyle='rgba(140,158,255,.07)'; c.fillRect(pl,pt,wx-pl,H);
+    c.strokeStyle='#2a2d35'; c.setLineDash([3,4]); c.beginPath(); c.moveTo(wx,pt); c.lineTo(wx,pt+H); c.stroke(); c.setLineDash([]);
+    c.fillStyle='#8b8f98'; c.fillText('SEALED WINDOW',pl+4,pt+12);
+    if(t>.12){
+      var cy2=pt+H*(1-.42);
+      c.fillStyle='#8c9eff'; for(k=0;k<22;k++) c.fillRect(pl+6+k*((wx-pl-12)/22),cy2-2,3,4);
+      c.fillStyle='#ff8e6b'; for(k=0;k<6;k++) c.fillRect(pl+10+k*((wx-pl-20)/6),cy2-2,3,4);
+      c.fillStyle='#f4f1e8'; c.fillText('EVERYONE FILLS AT ONE PRICE · BOTS INCLUDED',wx+8,cy2+30);
+    }
+    $('cmpT2').textContent=t<.12?'WINDOW 1 · SEALED':'CROSSED · ONE PRICE';
+  }
+}
+function cmpResize(){ CS1=cmpSize(cmp1); CS2=cmpSize(cmp2); }
+$('cmpReplay').addEventListener('click',function(){ cmpT=0; S.open(); });
+
+/* ---------- sealed placeholders ---------- */
+var glyph='█▓▒░';
+setInterval(function(){ ['sd1','sd2','sd3','sd4'].forEach(function(id){ var s=''; for(var i=0;i<4;i++) s+=glyph[Math.floor(rnd()*4)]; $(id).textContent=s; }); },420);
+
+/* ---------- coin button ---------- */
+$('coinBtn').addEventListener('click',function(e){ S.coin(); rain(10); });
+
+/* ======================================================
+   GAME — THE CROSS
+   ====================================================== */
+var LAUNCH=[
+  {t:'$LOAF',base:.0000412,p:"1,142 orders sealed in the first window, 19 of them from wallets that somehow had the contract before the website did. They crossed at exactly the same price as everyone else and left before the second window opened."},
+  {t:'$SOCK',base:.0000167,p:"A single sock launched on a Tuesday with no explanation offered. The bots fired in the first block, waited four minutes and fifty-nine seconds, and got the same fill as a person who pressed buy on a bus."},
+  {t:'$CHAIR',base:.0000291,p:"Buyers were heavy from the very start and the price had to climb to meet them. Nobody got a cheaper chair for being early, which several wallets described in the replies as deeply unfair."},
+  {t:'$BRICK',base:.0000538,p:"A whale sealed a large sell halfway through the window and nobody saw it coming, including the whale's own group chat. The cross absorbed it and the price moved once, for everybody at once."},
+  {t:'$LAMP',base:.0000123,p:"Two sniper bots fought over the first block and one of them paid triple gas to win it. It won the same price as the other bot and the same price as the 812 people who wandered in later."},
+  {t:'$MONDAY',base:.0000346,p:"The most sealed orders of the week, all of them for a token named after the worst day of it. The window cleared cleanly and the chart looked calm, which nobody had ever seen happen on a Monday."},
+  {t:'$TOASTER',base:.0000219,p:"Interest drifted all window long and the balance point refused to stay still. It crossed where buyers and sellers finally agreed, and the toaster went live at a single price for the whole room."},
+  {t:'$FAIRCROSS',base:.0000500,p:"The venue launched its own token through its own window, with its own team standing in the same queue as everybody. The team paid what everyone paid, and that was the last time anyone asked for an allocation."}
+];
+var N=160;
+var G={lvl:0,state:'idle',p:.5,t:0,dur:7,mb:.58,ms:.42,vb:0,vs:0,sd:.13,Wb:1,Ws:1,extras:[],b:new Float32Array(N+1),s:new Float32Array(N+1),D:new Float32Array(N+1),Sx:new Float32Array(N+1),best:0,bestV:1,accs:[],fails:0,orders:0,meterQ:3,revealT:0,lastAcc:0,whaleDone:false,snipeDone:false,noiseT:0,held:0,drag:false,flash:0};
+var gcv=$('gcv'), gx=gcv.getContext('2d'), GW=0, GH=0;
+function gResize(){ var r=gcv.getBoundingClientRect(); GW=r.width; GH=r.height; gcv.width=Math.round(GW*DPR); gcv.height=Math.round(GH*DPR); }
+function lvlP(l){ return {dur:7.4-l*.2, drift:.10+l*.055, noise:l<2?0:.10+l*.045, buckets:Math.max(7,14-l), whale:l>=3, shock:l>=5}; }
+function gauss(x,m,s){ var z=(x-m)/s; return Math.exp(-.5*z*z); }
+function compute(){
+  var b=G.b, s=G.s, i, x, j;
+  for(i=0;i<=N;i++){
+    x=i/N;
+    b[i]=G.Wb*gauss(x,G.mb,G.sd); s[i]=G.Ws*gauss(x,G.ms,G.sd);
+    for(j=0;j<G.extras.length;j++){ var e=G.extras[j], k=Math.min(1,e.age/.35); var v=e.w*k*gauss(x,e.x,e.sd); if(e.side) s[i]+=v; else b[i]+=v; }
+  }
+  var acc=0; for(i=N;i>=0;i--){ acc+=b[i]; G.D[i]=acc; }
+  acc=0; for(i=0;i<=N;i++){ acc+=s[i]; G.Sx[i]=acc; }
+  var bi=0, bv=-1; for(i=0;i<=N;i++){ var v2=Math.min(G.D[i],G.Sx[i]); if(v2>bv){ bv=v2; bi=i; } }
+  G.best=bi/N; G.bestV=bv;
+}
+function volAt(p){ var i=Math.round(clamp(p,0,1)*N); return Math.min(G.D[i],G.Sx[i]); }
+function imb(p){ var i=Math.round(clamp(p,0,1)*N); var d=G.D[i], s=G.Sx[i]; return (d-s)/Math.max(d,s,1e-6); }
+window.FC={pos:function(){return G.p;},best:function(){return G.best;},set:function(p){G.p=clamp(p,0,1);},state:function(){return G.state;},lvl:function(){return G.lvl;},go:function(){ goBtn(); }};
+
+var man=$('man');
+LAUNCH.forEach(function(L,i){
+  var li=document.createElement('li'); li.innerHTML='<span class="i">0'+(i+1)+'</span><span>'+L.t+'</span><b>SEALED</b>'; man.appendChild(li); L.li=li;
+});
+var repEl=$('reports');
+LAUNCH.forEach(function(L,i){
+  var d=document.createElement('div'); d.className='rep';
+  d.innerHTML='<div class="rh"><span>LAUNCH REPORT · 0'+(i+1)+'</span><span class="rw">WINDOW 1</span></div><h5>'+L.t+'</h5><p>'+L.p+'</p><div class="rf"><span class="rpx">—</span><span class="rac">—</span></div><div class="seal"><b>'+(i+1)+'</b>SEALED UNTIL CLEARED</div>';
+  repEl.appendChild(d); L.rep=d;
+});
+function markMan(){
+  LAUNCH.forEach(function(L,i){
+    L.li.classList.toggle('cur',i===G.lvl && G.lvl<8);
+    var b=L.li.querySelector('b');
+    if(G.accs[i]!==undefined){ L.li.classList.add('done'); b.textContent=(G.accs[i]*100).toFixed(1)+'%'; }
+    else { L.li.classList.remove('done'); b.textContent=i===G.lvl?'NEXT':'SEALED'; }
+  });
+  $('sWin').textContent=Math.min(8,G.lvl+1)+'/8';
+}
+var logEl=$('log'), t0g=performance.now();
+function log(m,cl){
+  var d=document.createElement('div'); var s=((performance.now()-t0g)/1000).toFixed(1);
+  d.innerHTML='<span>'+('     '+s).slice(-6)+'</span>'+m; if(cl) d.className=cl;
+  logEl.appendChild(d); logEl.scrollTop=logEl.scrollHeight;
+  while(logEl.children.length>60) logEl.removeChild(logEl.firstChild);
+}
+log('Venue ready. 8 launches scheduled.','b');
+
+function openWindow(){
+  var L=LAUNCH[G.lvl], P=lvlP(G.lvl);
+  G.state='run'; G.t=0; G.dur=P.dur; G.extras=[]; G.whaleDone=false; G.snipeDone=false;
+  var mid=.38+rnd()*.24, gap=.14+rnd()*.06;
+  G.mb=mid+gap/2; G.ms=mid-gap/2; G.vb=0; G.vs=0;
+  G.Wb=.8+rnd()*.5; G.Ws=.8+rnd()*.5; G.sd=.12+rnd()*.03;
+  G.whaleAt=P.whale?(.35+rnd()*.3):9; G.shockAt=P.shock?(.62+rnd()*.15):9;
+  G.p=clamp(mid+(rnd()<.5?-1:1)*(.14+rnd()*.12),.08,.92);
+  G.P=P;
+  compute();
+  $('gOv').classList.add('hide');
+  $('gGo').disabled=true; $('gGo').textContent='COLLECTING';
+  log('Window opened · '+L.t,'b'); S.open(); markMan();
+}
+function crossNow(){
+  compute();
+  var v=volAt(G.p), acc=G.bestV>0?v/G.bestV:0; G.lastAcc=acc;
+  var L=LAUNCH[G.lvl], price=L.base*(.6+.8*G.p);
+  var ords=Math.round(600+G.bestV/ (N) *1600 + rnd()*300);
+  G.state='reveal'; G.revealT=0;
+  $('sAcc').textContent=(acc*100).toFixed(1)+'%';
+  if(acc>=.82){
+    G.accs[G.lvl]=acc; G.orders+=ords;
+    $('sOrd').textContent=comma(G.orders);
+    log('Crossed at '+fp(price)+' · '+(acc*100).toFixed(1)+'% of max volume · '+comma(ords)+' orders','g');
+    log('Sniper filled at '+fp(price)+' · same as everyone','');
+    S.cross(); setTimeout(S.good,260);
+    var r=L.rep; r.classList.add('open'); r.querySelector('.rpx').textContent='@ '+fp(price);
+    r.querySelector('.rac').textContent=(acc*100).toFixed(1)+'% fill';
+    r.querySelector('.rw').textContent=G.fails?'CLEARED':'WINDOW 1';
+    G.pass=true;
+    for(var i=0;i<8;i++) setTimeout(function(){ burstG(); },i*40);
+  } else {
+    G.fails++; G.pass=false;
+    log('Thin cross · '+(acc*100).toFixed(1)+'% · orders roll into the next window','r');
+    S.bad();
+  }
+  $('gGo').textContent=G.pass?(G.lvl<7?'NEXT LAUNCH':'SETTLE'):'REOPEN WINDOW';
+  setTimeout(function(){ $('gGo').disabled=false; },700);
+  markMan();
+}
+var gb=[];
+function burstG(){ for(var i=0;i<6;i++) gb.push({x:G.p*GW,y:GH*.47,vx:(rnd()-.5)*7,vy:-2-rnd()*5,n:0}); }
+function goBtn(){
+  if(G.state==='idle'){ openWindow(); }
+  else if(G.state==='reveal'){
+    if(G.pass){
+      G.lvl++;
+      if(G.lvl>=8){ finish(); return; }
+    }
+    openWindow();
+  } else if(G.state==='done'){ resetGame(); openWindow(); }
+}
+$('gGo').addEventListener('click',goBtn);
+function finish(){
+  G.state='done'; markMan();
+  var avg=G.accs.reduce(function(a,b){return a+b;},0)/G.accs.length;
+  $('wAcc').textContent=(avg*100).toFixed(1)+'%'; $('wOrd').textContent=comma(G.orders); $('wFail').textContent=String(G.fails);
+  $('gGo').textContent='RUN AGAIN'; $('gGo').disabled=false;
+  $('ovH').innerHTML='All eight windows <i>settled.</i>';
+  $('ovP').textContent='Every launch crossed at one price. The reports below are open now, each one written after the window closed.';
+  $('gOv').classList.remove('hide');
+  log('All 8 launches settled · avg fill '+(avg*100).toFixed(1)+'%','g');
+  setTimeout(function(){ $('win').classList.add('on'); rain(90); S.good(); setTimeout(S.cross,300); },500);
+}
+function resetGame(){
+  G.lvl=0; G.accs=[]; G.fails=0; G.orders=0; G.state='idle';
+  LAUNCH.forEach(function(L){ L.rep.classList.remove('open'); });
+  $('sOrd').textContent='0'; $('sAcc').textContent='—'; markMan();
+}
+$('wClose').addEventListener('click',function(){ $('win').classList.remove('on'); });
+$('wAgain').addEventListener('click',function(){ $('win').classList.remove('on'); resetGame(); document.getElementById('cross').scrollIntoView({behavior:'smooth'}); setTimeout(openWindow,500); });
+$('win').addEventListener('click',function(e){ if(e.target===this) this.classList.remove('on'); });
+
+/* input */
+var box=$('gcvBox');
+function setFromX(cx){ var r=gcv.getBoundingClientRect(); G.p=clamp((cx-r.left-PADL())/(GW-PADL()-PADR()),0,1); }
+function PADL(){ return 18; } function PADR(){ return 18; }
+box.addEventListener('pointerdown',function(e){ if(G.state!=='run') return; G.drag=true; box.setPointerCapture(e.pointerId); setFromX(e.clientX); });
+box.addEventListener('pointermove',function(e){ if(G.drag) setFromX(e.clientX); });
+box.addEventListener('pointerup',function(){ G.drag=false; });
+box.addEventListener('pointercancel',function(){ G.drag=false; });
+var keyDir=0;
+function holdBtn(el,d){
+  el.addEventListener('pointerdown',function(e){ e.preventDefault(); keyDir=d; el.setPointerCapture(e.pointerId); });
+  ['pointerup','pointercancel','lostpointercapture'].forEach(function(n){ el.addEventListener(n,function(){ if(keyDir===d) keyDir=0; }); });
+}
+holdBtn($('gL'),-1); holdBtn($('gR'),1);
+var gameVisible=false;
+new IntersectionObserver(function(en){ gameVisible=en[0].isIntersecting; },{threshold:.25}).observe(box);
+document.addEventListener('keydown',function(e){
+  if(!gameVisible) return;
+  if(e.key==='ArrowLeft'||e.key==='a'||e.key==='A'){ keyDir=-1; e.preventDefault(); }
+  else if(e.key==='ArrowRight'||e.key==='d'||e.key==='D'){ keyDir=1; e.preventDefault(); }
+  else if((e.key===' '||e.key==='Enter') && !e.repeat){ if(!$('gGo').disabled && G.state!=='run'){ e.preventDefault(); goBtn(); } }
+});
+document.addEventListener('keyup',function(e){ if(['ArrowLeft','ArrowRight','a','A','d','D'].indexOf(e.key)>=0) keyDir=0; });
+
+var mCells=$('mCells').children;
+function meter(dt){
+  var v=imb(G.p), q;
+  var a=Math.abs(v);
+  q= a<.06?0 : a<.2?1 : a<.45?2 : 3;
+  if(G.P && G.P.noise && G.state==='run'){
+    G.noiseT-=dt;
+    if(G.noiseT<=0){ G.noiseT=.22; G.nz=(rnd()<G.P.noise)?(rnd()<.5?-1:1):0; }
+    q=clamp(q+(G.nz||0),0,3);
+  }
+  var idx= q===0?3 : (v>0?3+q:3-q);
+  if(G.meterQ!==idx){ G.meterQ=idx; if(G.state==='run') S.tick(); }
+  for(var i=0;i<7;i++) mCells[i].classList.toggle('on', i===idx || (idx>3&&i>3&&i<idx) || (idx<3&&i<3&&i>idx));
+  var say=$('mSay');
+  if(G.state!=='run') return;
+  if(idx===3) say.innerHTML='<b>Balanced.</b> Hold it here, new orders are still landing.';
+  else if(idx>3) say.innerHTML='<b>Buyers left over.</b> Raise the price ▶';
+  else say.innerHTML='<b>Sellers left over.</b> Lower the price ◀';
+}
+
+function gStep(dt){
+  if(keyDir && G.state==='run') G.p=clamp(G.p+keyDir*dt*.32,0,1);
+  if(G.state==='run'){
+    var P=G.P; G.t+=dt;
+    // drift
+    G.vb+=(rnd()-.5)*P.drift*dt*6; G.vs+=(rnd()-.5)*P.drift*dt*6;
+    G.vb*=.985; G.vs*=.985;
+    G.vb=clamp(G.vb,-P.drift,P.drift); G.vs=clamp(G.vs,-P.drift,P.drift);
+    G.mb=clamp(G.mb+G.vb*dt,.22,.86); G.ms=clamp(G.ms+G.vs*dt,.14,.78);
+    if(G.mb-G.ms<.06){ G.mb+=.02*dt; G.ms-=.02*dt; }
+    var fr=G.t/G.dur;
+    if(!G.snipeDone && G.t>.35){ G.snipeDone=true; G.extras.push({side:0,x:.9+rnd()*.05,w:.18,sd:.015,age:0,label:'SNIPER · BLOCK 0'}); log('Sniper order sealed · block 0','w'); S.snipe(); }
+    if(!G.whaleDone && fr>G.whaleAt){ G.whaleDone=true; var sd=rnd()<.5?1:0; G.extras.push({side:sd,x:sd?clamp(G.ms-.05,.1,.9):clamp(G.mb+.05,.1,.9),w:.55+G.lvl*.05,sd:.05,age:0,label:'WHALE · '+(sd?'SELL':'BUY')}); log('Whale '+(sd?'sell':'buy')+' order sealed','w'); S.whale(); G.flash=1; }
+    if(fr>G.shockAt && !G.shockDone){ G.shockDone=true; var d=(rnd()<.5?-1:1)*.08; G.mb=clamp(G.mb+d,.22,.86); G.ms=clamp(G.ms+d,.14,.78); log('Interest shifted '+(d>0?'up':'down'),'w'); G.flash=1; }
+    G.extras.forEach(function(e){ e.age+=dt; });
+    compute();
+    var rem=G.dur-G.t;
+    $('sTime').textContent=rem.toFixed(1)+'s';
+    if(rem<=0){ $('sTime').textContent='0.0s'; G.shockDone=false; crossNow(); }
+  } else {
+    if(G.state==='reveal') G.revealT+=dt;
+    if(G.state!=='reveal') $('sTime').textContent='—';
+  }
+  meter(dt);
+  if(G.flash>0) G.flash=Math.max(0,G.flash-dt*2.5);
+}
+var spk=[];
+function gDraw(){
+  var c=gx; c.setTransform(DPR,0,0,DPR,0,0); c.clearRect(0,0,GW,GH);
+  var pl=PADL(), pr=PADR(), W=GW-pl-pr, top=26, bot=GH-34, cy=(top+bot)/2, half=(bot-top)/2-6;
+  // grid
+  c.strokeStyle='#17181d'; c.lineWidth=1;
+  for(var g=0;g<=10;g++){ var x=pl+W*g/10; c.beginPath(); c.moveTo(x,top); c.lineTo(x,bot); c.stroke(); }
+  c.strokeStyle='#2a2d35'; c.beginPath(); c.moveTo(pl,cy); c.lineTo(pl+W,cy); c.stroke();
+  // labels
+  var L=LAUNCH[Math.min(G.lvl,7)];
+  c.fillStyle='#5a5e67'; c.font='500 10px Geist Mono, monospace'; c.textAlign='center';
+  for(g=0;g<=4;g++){ if(GW<560 && g%2) continue; c.textAlign=g===0?'left':g===4?'right':'center'; c.fillText(fp(L.base*(.6+.8*g/4)),pl+W*g/4,GH-12); }
+  c.textAlign='left'; c.fillStyle='#8c9eff'; c.fillText('BUY INTEREST',pl+2,top-10);
+  c.fillStyle='#ff8e6b'; c.fillText('SELL INTEREST',pl+2,bot+2+10);
+  c.textAlign='right'; c.fillStyle='#8b8f98'; c.fillText(L.t+' · PRICE, ETH',GW-pr,top-10);
+  if(G.state==='idle' && !G.accs.length){ compute(); }
+  // bands
+  var P=G.P||lvlP(G.lvl), B=P.buckets, bw=W/B, maxb=0, maxs=0, i, k;
+  var ab=[], as=[];
+  for(k=0;k<B;k++){
+    var i0=Math.floor(k/B*N), i1=Math.floor((k+1)/B*N), sb=0, ss=0;
+    for(i=i0;i<=i1;i++){ sb+=G.b[i]; ss+=G.s[i]; }
+    sb/=(i1-i0+1); ss/=(i1-i0+1); ab.push(sb); as.push(ss);
+    maxb=Math.max(maxb,sb); maxs=Math.max(maxs,ss);
+  }
+  var mx=Math.max(maxb,maxs,1e-6), levels=[.07,.36,.68,1];
+  var tt=performance.now()/1000;
+  for(k=0;k<B;k++){
+    var qb=ab[k]/mx, qs=as[k]/mx;
+    var lb=qb<.08?0:qb<.35?1:qb<.7?2:3, ls=qs<.08?0:qs<.35?1:qs<.7?2:3;
+    var hb=levels[lb]*half*(1+.03*Math.sin(tt*3+k)), hs=levels[ls]*half*(1+.03*Math.sin(tt*3+k+2));
+    var x0=pl+k*bw+2, w0=bw-4;
+    c.fillStyle='rgba(140,158,255,'+(.10+lb*.2)+')'; c.fillRect(x0,cy-3-hb,w0,hb);
+    c.fillStyle='rgba(255,142,107,'+(.10+ls*.2)+')'; c.fillRect(x0,cy+3,w0,hs);
+    // hatch = sealed
+    c.strokeStyle='rgba(9,9,11,.35)'; c.lineWidth=1;
+    for(var hy=cy-3-hb+6;hy<cy-3;hy+=6){ c.beginPath(); c.moveTo(x0,hy); c.lineTo(x0+w0,hy); c.stroke(); }
+    for(hy=cy+9;hy<cy+3+hs;hy+=6){ c.beginPath(); c.moveTo(x0,hy); c.lineTo(x0+w0,hy); c.stroke(); }
+  }
+  // incoming sealed orders
+  if(G.state==='run' && rnd()<.8){
+    var sdn=rnd()<.5, pick=rnd()*(sdn?1:1), cum=0, arr=sdn?as:ab, tot=arr.reduce(function(a,b){return a+b;},0), kk=0;
+    for(kk=0;kk<B;kk++){ cum+=arr[kk]/tot; if(cum>=pick) break; }
+    spk.push({x:pl+(Math.min(kk,B-1)+.5)*bw+(rnd()-.5)*bw*.5,y:sdn?GH+4:-4,ty:cy+(sdn?8:-8),side:sdn,n:0});
+  }
+  for(i=spk.length-1;i>=0;i--){
+    var p=spk[i]; p.n++; p.y+=(p.ty-p.y)*.08;
+    c.fillStyle=p.side?'rgba(255,142,107,'+(1-p.n/50)+')':'rgba(140,158,255,'+(1-p.n/50)+')';
+    c.fillRect(p.x-1.5,p.y-1.5,3,3);
+    if(p.n>50) spk.splice(i,1);
+  }
+  // extras labels
+  G.extras.forEach(function(e){
+    if(G.state!=='run'&&G.state!=='reveal') return;
+    var ex=pl+W*e.x, a=Math.max(.35,1-e.age/2.5);
+    c.fillStyle=e.side?'rgba(255,142,107,'+a+')':'rgba(255,207,107,'+a+')';
+    c.font='600 10px Geist Mono, monospace'; c.textAlign=ex>GW*.7?'right':'left';
+    var ly=e.side?cy+half*.9:top+14;
+    c.fillText(e.label,ex+(ex>GW*.7?-6:6),ly);
+    c.fillRect(ex-1,e.side?cy+4:top+18,2,e.side?ly-cy-14:cy-top-22);
+  });
+  // reveal curves
+  if(G.state==='reveal'||G.state==='done'){
+    var rv=Math.min(1,G.revealT/.8), maxD=Math.max(G.D[0],G.Sx[N]);
+    c.lineWidth=1.6;
+    c.strokeStyle='rgba(140,158,255,.95)'; c.beginPath();
+    for(i=0;i<=N*rv;i++){ var X=pl+W*i/N, Y=bot-(G.D[i]/maxD)*(bot-top); if(i) c.lineTo(X,Y); else c.moveTo(X,Y); } c.stroke();
+    c.strokeStyle='rgba(255,142,107,.95)'; c.beginPath();
+    for(i=0;i<=N*rv;i++){ X=pl+W*i/N; Y=bot-(G.Sx[i]/maxD)*(bot-top); if(i) c.lineTo(X,Y); else c.moveTo(X,Y); } c.stroke();
+    if(rv>=1){
+      var bx=pl+W*G.best; c.setLineDash([4,4]); c.strokeStyle='rgba(126,224,176,.9)'; c.beginPath(); c.moveTo(bx,top); c.lineTo(bx,bot); c.stroke(); c.setLineDash([]);
+      c.fillStyle='#7ee0b0'; c.font='600 10px Geist Mono, monospace'; c.textAlign=bx>GW/2?'right':'left';
+      c.fillText('MAX VOLUME',bx+(bx>GW/2?-6:6),bot-8);
+      // big result
+      c.textAlign='center'; c.font='600 '+Math.min(34,GW/14)+'px Geist Mono, monospace';
+      c.fillStyle=G.pass?'#f4f1e8':'#ff8e6b';
+      if(G.state==='reveal'){ c.fillStyle='rgba(9,9,11,.82)'; rr(c,GW/2-150,top+14,300,58,10); c.fill(); c.strokeStyle='#2a2d35'; c.lineWidth=1; c.stroke(); c.fillStyle=G.pass?'#f4f1e8':'#ff8e6b'; c.fillText((G.lastAcc*100).toFixed(1)+'%',GW/2,top+44); c.font='500 11px Geist Mono, monospace'; c.fillStyle='#8b8f98'; c.fillText(G.pass?'OF MAX VOLUME CROSSED · ONE PRICE':'THIN CROSS · NEEDS 82%',GW/2,top+62); }
+    }
+  }
+  // price line
+  if(G.state!=='done'){
+    var px=pl+W*G.p;
+    c.strokeStyle=G.state==='run'?'#f4f1e8':'rgba(244,241,232,.6)'; c.lineWidth=2;
+    c.beginPath(); c.moveTo(px,top); c.lineTo(px,bot); c.stroke();
+    c.fillStyle='#f4f1e8'; c.beginPath(); c.arc(px,cy,6,0,6.283); c.fill();
+    c.fillStyle='#09090b'; c.fillRect(px-3,cy-.8,6,1.6);
+    var lab=fp(L.base*(.6+.8*G.p)); c.font='600 11px Geist Mono, monospace';
+    var tw=c.measureText(lab).width+14, lx=clamp(px-tw/2,2,GW-tw-2);
+    c.fillStyle='#f4f1e8'; rr(c,lx,cy+12,tw,20,4); c.fill();
+    c.fillStyle='#09090b'; c.textAlign='left'; c.fillText(lab,lx+7,cy+26);
+  }
+  // timer bar
+  if(G.state==='run'){
+    var fr=1-G.t/G.dur; c.fillStyle='#1e2026'; c.fillRect(0,0,GW,3);
+    c.fillStyle=fr<.3?'#ff8e6b':'#8c9eff'; c.fillRect(0,0,GW*fr,3);
+  }
+  // particles
+  for(i=gb.length-1;i>=0;i--){ var q=gb[i]; q.n++; q.vy+=.2; q.x+=q.vx; q.y+=q.vy; c.fillStyle='rgba(244,241,232,'+Math.max(0,1-q.n/50)+')'; c.fillRect(q.x-3,q.y-3,6,6); if(q.n>50) gb.splice(i,1); }
+  if(G.flash>0){ c.fillStyle='rgba(255,207,107,'+G.flash*.12+')'; c.fillRect(0,0,GW,GH); }
+}
+
+/* ---------- main loop ---------- */
+var last=performance.now(), cmpVis=false, vaultVis=true;
+new IntersectionObserver(function(en){ cmpVis=en[0].isIntersecting; },{threshold:.1}).observe($('compare'));
+new IntersectionObserver(function(en){ vaultVis=en[0].isIntersecting; }).observe($('vault'));
+function loop(now){
+  var dt=Math.min(.05,(now-last)/1000); last=now;
+  gStep(dt);
+  if(gameVisible||G.state==='run') gDraw();
+  if(vaultVis) vDraw();
+  if(cmpVis){ cmpT=Math.min(1.25,cmpT+dt/7); var tt2=Math.min(1,cmpT); drawCmp(cmp1,CS1,pubPath,true,tt2); drawCmp(cmp2,CS2,fairPath,false,tt2); if(cmpT>=1.25) cmpT=0; }
+  requestAnimationFrame(loop);
+}
+function resizeAll(){ vResize(); gResize(); cmpResize(); }
+window.addEventListener('resize',resizeAll);
+resizeAll(); compute(); markMan(); ledTick(); meter(0);
+$('mSay').textContent='Sellers left over means your price is too high. Buyers left over means it is too low.';
+requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
