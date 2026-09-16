@@ -297,7 +297,7 @@ footer .fl2 a:hover{color:var(--ink)}
 @media (min-width:1001px) and (max-height:780px){
   h1{font-size:clamp(36px,4.3vw,58px);margin:14px 0 14px}
   .facts{margin-top:20px} .cta{margin-top:20px}
-  .vault{height:170px} .c-row{padding:6px 0} .c-top{padding-top:12px}
+  .vault{height:135px} .c-row{padding:5px 0} .c-top{padding-top:10px} .c-timer{font-size:40px} .c-cta{padding:9px 18px} .c-cta p span{display:none} .c-hd{padding:10px 18px} .cta .btn{height:42px}
   .hero{padding:20px 0 24px}
 }
 @media (max-width:1100px){
@@ -347,6 +347,88 @@ footer .fl2 a:hover{color:var(--ink)}
   .spec div{grid-template-columns:1fr;gap:6px}
   .tok-l .coin{width:110px;height:110px}
 }
+/* ---------- wallet ---------- */
+.btn.sm{height:34px;padding:0 13px;font-size:13px;border-radius:8px}
+.btn.acc{background:var(--cross);border-color:var(--cross);color:#0b0b0d}
+.btn.acc:hover{box-shadow:0 0 0 4px rgba(244,241,232,.12)}
+.hd-w{height:34px;padding:0 14px;font-size:13px}
+.wbtn .addr{font-family:var(--mono);font-size:12.5px}
+.wbtn .net{display:inline-flex;align-items:center;gap:7px}
+.wbtn.bad{border-color:rgba(255,142,107,.6);color:var(--sell);background:rgba(255,142,107,.08)}
+.wdot{width:7px;height:7px;border-radius:50%;background:var(--ok);display:inline-block}
+.wdot.bad{background:var(--sell)}
+.c-row.cw{cursor:pointer}
+.c-row.cw:hover b{color:var(--buy)}
+.tok-w{display:flex;flex-direction:column;gap:8px}
+.tok-bal{font-family:var(--mono);font-size:12px;color:var(--mute)}
+.tok-bal b{color:var(--ink);font-weight:500}
+.ov{position:fixed;inset:0;z-index:110;background:rgba(5,5,7,.66);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:16px}
+.ov.show{display:flex;animation:fade .15s}
+@keyframes fade{from{opacity:0}}
+@keyframes rise{from{transform:translateY(8px);opacity:.6}}
+.modal{width:100%;max-width:430px;background:var(--panel);border:1px solid var(--line2);border-radius:16px;box-shadow:0 40px 90px -30px rgba(0,0,0,.9);overflow:hidden;animation:rise .2s;max-height:calc(100svh - 32px);display:flex;flex-direction:column}
+.modal-h{display:flex;align-items:center;gap:10px;padding:16px 18px 12px;border-bottom:1px solid var(--line)}
+.modal-h h3{font-size:16px;font-weight:500;letter-spacing:-.01em}
+.modal-h .x{margin-left:auto;width:32px;height:32px;border-radius:8px;border:1px solid var(--line2);display:grid;place-items:center;color:var(--mute)}
+.modal-h .x:hover{border-color:var(--line3);color:var(--ink)}
+.modal-b{padding:16px 18px 18px;overflow-y:auto}
+.netcard{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--bg2);margin-bottom:14px}
+.netcard .ic{width:34px;height:34px;border-radius:9px;background:#1a1b20;border:1px solid var(--line2);display:grid;place-items:center;flex:none}
+.netcard b{display:block;font-size:14px;font-weight:500}
+.netcard span{font-family:var(--mono);font-size:11px;color:var(--mute)}
+.wlist{display:grid;gap:8px}
+.wopt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:1px solid var(--line);border-radius:12px;background:var(--panel2);padding:10px 12px;transition:border-color .12s,box-shadow .12s}
+.wopt:hover{border-color:var(--line3);box-shadow:0 0 0 3px rgba(140,158,255,.08)}
+.wopt img,.wopt .gic{width:30px;height:30px;border-radius:8px;flex:none;object-fit:contain}
+.wopt .gic{background:var(--line);display:grid;place-items:center}
+.wopt b{font-weight:500;font-size:14.5px}
+.wopt .badge{margin-left:auto;font-family:var(--mono);font-size:10px;letter-spacing:.06em;padding:3px 7px;border-radius:5px;background:rgba(126,224,176,.12);color:var(--ok)}
+.wopt.busy .badge{background:rgba(140,158,255,.14);color:var(--buy)}
+.wopt .lg{width:30px;height:30px;border-radius:8px;flex:none;display:grid;place-items:center;font-weight:700;font-size:14px;color:#fff}
+.wopt .chev{margin-left:auto;color:var(--dim);transition:transform .15s}
+.wopt.open .chev{transform:rotate(90deg)}
+.whelp{display:none;border:1px solid var(--line);border-top:0;border-radius:0 0 12px 12px;margin-top:-10px;padding:16px 13px 12px;background:var(--bg2);font-size:13px;color:var(--mute);line-height:1.55}
+.whelp.show{display:block}
+.whelp b{color:var(--ink);font-weight:500}
+.whelp ol{margin:6px 0 10px;padding-left:18px}
+.whelp .acts{display:flex;flex-wrap:wrap;gap:6px}
+.whelp code{font-family:var(--mono);font-size:11.5px;background:var(--panel2);border:1px solid var(--line2);border-radius:5px;padding:1px 5px;word-break:break-all;color:var(--ink)}
+.msec{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin:16px 0 8px;display:flex;justify-content:space-between}
+.wc{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:1px solid rgba(59,153,252,.5);border-radius:12px;background:rgba(59,153,252,.08);padding:10px 12px}
+.wc:hover{box-shadow:0 0 0 3px rgba(59,153,252,.16)}
+.wc b{font-weight:500}
+.wc small{margin-left:auto;font-family:var(--mono);font-size:11px;color:#7db8ff}
+.merr{margin-top:12px;font-size:13px;color:var(--sell);display:none;background:rgba(255,142,107,.08);border:1px solid rgba(255,142,107,.3);border-radius:10px;padding:10px 12px}
+.merr.show{display:block}
+.mfoot{margin-top:14px;font-size:12px;color:var(--dim);line-height:1.5}
+.acct{display:grid;gap:10px}
+.acct .who{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--bg2)}
+.acct .who canvas{width:40px;height:40px;border-radius:10px;flex:none}
+.acct .who b{font-family:var(--mono);font-weight:500;font-size:14px;display:block}
+.acct .who span{font-size:12px;color:var(--mute)}
+.acct .who .cp{margin-left:auto}
+.kv{border:1px solid var(--line);border-radius:12px;background:var(--bg2)}
+.kv div{display:flex;justify-content:space-between;gap:10px;padding:9px 14px;font-size:13.5px;border-bottom:1px solid var(--line)}
+.kv div:last-child{border-bottom:0}
+.kv span{color:var(--mute)}
+.kv b{font-family:var(--mono);font-weight:500;text-align:right}
+.kv b.ok{color:var(--ok)} .kv b.bad{color:var(--sell)}
+.acct .btns{display:flex;gap:8px}
+.acct .btns .btn{flex:1}
+.sealf{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--bg2);display:grid;gap:10px}
+.sealf h4{font-family:var(--mono);font-weight:500;font-size:10.5px;letter-spacing:.12em;color:var(--dim)}
+.sealf .row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sealf label{display:grid;gap:4px;font-size:11px;color:var(--mute);font-family:var(--mono);letter-spacing:.04em}
+.sealf select,.sealf input{height:36px;border-radius:8px;border:1px solid var(--line2);background:var(--panel);color:var(--ink);font:500 13px var(--mono);padding:0 10px;width:100%;min-width:0}
+.sealf select:focus,.sealf input:focus{outline:none;border-color:var(--buy)}
+.side{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.side button{height:36px;border-radius:8px;border:1px solid var(--line2);font:500 12px var(--mono);letter-spacing:.08em;color:var(--mute)}
+.side button.on[data-s="buy"]{border-color:var(--buy);color:var(--buy);background:rgba(140,158,255,.1)}
+.side button.on[data-s="sell"]{border-color:var(--sell);color:var(--sell);background:rgba(255,142,107,.1)}
+.sealed-out{font-family:var(--mono);font-size:11.5px;color:var(--mute);word-break:break-all;line-height:1.5}
+.sealed-out b{color:var(--ok);font-weight:500}
+@media (max-width:760px){ .hd-w{padding:0 10px;font-size:12px} .hd-w .wl{font-size:12px} #musBtn{display:none} }
+
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -371,6 +453,7 @@ footer .fl2 a:hover{color:var(--ink)}
       <span class="pill net"><span class="dot"></span>ROBINHOOD CHAIN</span>
       <button class="tgl on" id="sfxBtn" aria-pressed="true">SOUND</button>
       <button class="tgl" id="musBtn" aria-pressed="false">MUSIC</button>
+      <button class="btn ghost hd-w wbtn" type="button" id="wBtn"><span class="wl">Connect wallet</span></button>
       <a class="btn primary hd-buy soon buyLink" href="#" id="buyBtn2">Buy</a>
     </div>
   </div>
@@ -397,6 +480,7 @@ footer .fl2 a:hover{color:var(--ink)}
       <div class="cta">
         <a class="btn primary soon" href="#" id="buyBtn">Buy $FAIRCROSS <span class="tag">SOON</span></a>
         <a class="btn game" href="#cross"><span class="ar">▶</span> Clear a window yourself</a>
+        <button class="btn ghost" type="button" id="wBtn3"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="1.5" y="3.5" width="13" height="10" rx="2.2"/><path d="M11 8.5h1.4M1.5 6h13"/></svg><span class="wl3">Connect wallet</span></button>
         <a class="btn ghost" href="#" id="xBtn" target="_blank" rel="noopener" aria-label="FairCross on X">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.2 2.3h3.4l-7.4 8.4 8.7 11.5h-6.8l-5.3-7-6.1 7H1.3l7.9-9L.9 2.3h7l4.8 6.4 5.5-6.4Zm-1.2 17.9h1.9L7.1 4.2H5.1l11.9 16Z"/></svg>
         </a>
@@ -423,9 +507,10 @@ footer .fl2 a:hover{color:var(--ink)}
         <div class="c-row"><span>Sealed orders</span><b id="cSealed">0</b></div>
         <div class="c-row"><span>Interest bands</span><span class="bands" id="cBands"></span></div>
         <div class="c-row"><span>Last cross</span><b id="cLast">—</b></div>
+        <div class="c-row cw" id="cWalRow"><span>Your wallet</span><b id="cWal">connect · Robinhood Chain</b></div>
       </div>
       <div class="c-cta">
-        <p><b>THE CROSS · 8 launch windows</b>Find the one price where nobody is left over, before the window closes.</p>
+        <p><b>THE CROSS · 8 launch windows</b><span>Find the one price where nobody is left over, before the window closes.</span></p>
         <a class="btn game" href="#cross"><span class="ar">▶</span> Play</a>
       </div>
     </div>
@@ -597,7 +682,9 @@ footer .fl2 a:hover{color:var(--ink)}
         <button class="coin" id="coinBtn" aria-label="Seal a coin">
           <svg viewBox="0 0 28 28" fill="none"><path d="M5 7.5 14 14M5 20.5 14 14" stroke="#8c9eff" stroke-width="1.4" stroke-linecap="round"/><path d="M14 14h9" stroke="#f4f1e8" stroke-width="2" stroke-linecap="round"/><circle cx="14" cy="14" r="1.8" fill="#f4f1e8"/></svg>
         </button>
-        <a class="btn primary soon buyLink" href="#" id="buyBtn3">Buy $FAIRCROSS <span class="tag">SOON</span></a>
+        <div class="tok-w"><a class="btn primary soon buyLink" href="#" id="buyBtn3">Buy $FAIRCROSS <span class="tag">SOON</span></a>
+        <button class="btn ghost" type="button" id="wBtn2">Connect wallet</button>
+        <div class="tok-bal" id="tokBal">Connect a wallet on Robinhood Chain to see your $FAIRCROSS.</div></div>
       </div>
       <dl class="spec">
         <div><dt>SUPPLY</dt><dd><b>1,000,000,000 $FAIRCROSS</b>, all of it launched through the venue's very first window. The team sealed its orders like everybody else and crossed at the same price, which made for a strange meeting.</dd></div>
@@ -635,6 +722,12 @@ footer .fl2 a:hover{color:var(--ink)}
     <div class="w-btns"><a class="btn primary soon buyLink" href="#" id="buyBtn4">Buy $FAIRCROSS</a><button class="btn ghost" id="wAgain">Run it again</button><button class="btn ghost" id="wClose">Close</button></div>
   </div>
 </div>
+<div class="ov" id="ov" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+  <div class="modal">
+    <div class="modal-h"><h3 id="mTitle">Connect wallet</h3><button class="x" id="mClose" aria-label="Close"><svg width="14" height="14" viewBox="0 0 14 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 2l10 10M12 2L2 12"/></svg></button></div>
+    <div class="modal-b" id="mBody"></div>
+  </div>
+</div>
 <div id="rain"></div>
 <div class="toast" id="toast"></div>
 
@@ -643,6 +736,7 @@ footer .fl2 a:hover{color:var(--ink)}
 window.CONTRACT = "";      /* адрес контракта */
 window.TWITTER  = "";      /* ссылка на X */
 window.BUY_URL  = "";      /* ссылка на покупку — пусто, пока Олег не даст */
+window.WC_PROJECT_ID = ""; /* WalletConnect / Reown project id (cloud.reown.com) — включает QR для Robinhood Wallet и телефонов */
 /* ================================== */
 
 var CA=(window.CONTRACT||"").trim(), TW=(window.TWITTER||"").trim(), BUY=(window.BUY_URL||"").trim();
@@ -953,6 +1047,11 @@ $('vault').addEventListener('pointerdown',function(e){
   if(sealClicks%12===0){ rain(24); toast("Twelve orders sealed. Nobody saw a single one."); }
 });
 
+window.__vaultSeal=function(){
+  extraSeal++;
+  for(var i=0;i<18;i++){ var col=i%3===0?'rgba(244,241,232,A)':(i%2?'rgba(140,158,255,A)':'rgba(255,142,107,A)'); bursts.push({x:VW/2,y:VH/2,vx:(rnd()-.5)*9,vy:-3-rnd()*5,n:0,r:(rnd()-.5)*.3,col:col}); }
+  for(i=0;i<6;i++){ parts.push({side:rnd()<.5?0:1,x:VW/2,y:VH/2,tx:VW*.5+(rnd()-.5)*VW*.2,ty:VH*.5+(rnd()-.5)*VH*.34,t:0,s:3,life:0,ph:rnd()*6.28}); }
+};
 /* ---------- compare canvases ---------- */
 var cmp1=$('cmp1'), cmp2=$('cmp2'), cmpT=0, cmpRun=true;
 function cmpSize(cv){ var r=cv.getBoundingClientRect(); cv.width=Math.round(r.width*DPR); cv.height=Math.round(r.height*DPR); return {w:r.width,h:r.height}; }
@@ -1337,6 +1436,372 @@ window.addEventListener('resize',resizeAll);
 resizeAll(); compute(); markMan(); ledTick(); meter(0);
 $('mSay').textContent='Sellers left over means your price is too high. Buyers left over means it is too low.';
 requestAnimationFrame(loop);
+})();
+</script>
+<script>
+/* =================================================================
+   WALLET — EIP-6963 discovery + EIP-1193, Robinhood Chain (4663)
+   ================================================================= */
+(function(){
+"use strict";
+var $=function(id){return document.getElementById(id);};
+var CHAIN={
+  chainId:'0x133f',
+  chainName:'Robinhood Chain',
+  nativeCurrency:{name:'Ether',symbol:'ETH',decimals:18},
+  rpcUrls:['https://rpc.mainnet.chain.robinhood.com'],
+  blockExplorerUrls:['https://robinhoodchain.blockscout.com']
+};
+var TOKCA=(window.CONTRACT||'').trim();
+var WC_ID=(window.WC_PROJECT_ID||'').trim();
+var MOBILE=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+var W={providers:{},prov:null,info:null,addr:null,chain:null,eth:null,bal:null,dec:18};
+function store(k,v){
+  try{
+    if(v===undefined) return localStorage.getItem(k);
+    if(v===null) localStorage.removeItem(k); else localStorage.setItem(k,v);
+  }catch(e){ return null; }
+}
+function beep(a,b,d,t,g){ if(window.tone) window.tone(a,b,d,t,g); }
+function say(m){ if(window.toast) window.toast(m); }
+
+window.addEventListener('eip6963:announceProvider',function(e){
+  var d=e.detail; if(!d||!d.info||!d.provider) return;
+  W.providers[d.info.uuid]=d;
+  if($('ov').classList.contains('show') && !W.addr) renderPicker();
+});
+window.dispatchEvent(new Event('eip6963:requestProvider'));
+
+function short(a){ return a?a.slice(0,6)+'…'+a.slice(-4):''; }
+function isOk(){ return !!W.chain && W.chain.toLowerCase()===CHAIN.chainId; }
+function fmtUnits(hex,dec,dp){
+  try{
+    var v=BigInt(hex||'0x0'), base=BigInt(10)**BigInt(dec);
+    var whole=v/base, frac=v%base;
+    var f=frac.toString().padStart(dec,'0').slice(0,dp).replace(/0+$/,'');
+    return whole.toLocaleString('en-US')+(f?'.'+f:'');
+  }catch(e){ return '—'; }
+}
+function esc(s){ return String(s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function pageUrl(){ return location.origin+location.pathname; }
+function listOptions(){
+  var list=Object.keys(W.providers).map(function(k){ return W.providers[k]; });
+  if(!list.length && window.ethereum){
+    var e=window.ethereum;
+    var nm=e.isRabby?'Rabby':e.isTrust||e.isTrustWallet?'Trust Wallet':e.isOkxWallet||e.isOKExWallet?'OKX Wallet':e.isRobinhood||e.isRobinhoodWallet?'Robinhood Wallet':e.isMetaMask?'MetaMask':'Browser wallet';
+    list.push({info:{uuid:'legacy',name:nm,icon:'',rdns:'legacy'},provider:e});
+  }
+  return list;
+}
+
+/* wallets that work on Robinhood Chain */
+var KNOWN=[
+  {k:'robinhood',n:'Robinhood Wallet',c:'#1c1d22',t:'R',m:/robinhood/i,
+   help:function(){ return '<p>Robinhood Wallet supports Robinhood Chain out of the box.</p><ol><li>Open Robinhood Wallet on your phone</li><li>Tap <b>Web3</b> (the globe icon)</li><li>Paste <code>'+esc(pageUrl())+'</code> and tap Connect wallet there</li></ol>'; },
+   acts:function(){ return (WC_ID?'<button class="btn sm acc" data-act="wc">Scan QR with WalletConnect</button>':'')+'<button class="btn sm ghost" data-act="copy">Copy site link</button><a class="btn sm ghost" target="_blank" rel="noopener" href="https://robinhood.com/us/en/download/wallet/">Get the app ↗</a>'; }},
+  {k:'metamask',n:'MetaMask',c:'#F6851B',t:'M',m:/metamask/i,
+   help:function(){ return MOBILE?'<p>Opens this page inside the MetaMask app. FairCross then adds Robinhood Chain for you.</p>':'<p>Install the MetaMask extension and reload this page. FairCross adds Robinhood Chain (4663) to it when you connect.</p>'; },
+   acts:function(){ return MOBILE?'<a class="btn sm acc" href="https://metamask.app.link/dapp/'+esc(location.host+location.pathname)+'">Open in MetaMask</a>':'<a class="btn sm acc" target="_blank" rel="noopener" href="https://metamask.io/download/">Install MetaMask ↗</a>'+(WC_ID?'<button class="btn sm ghost" data-act="wc">Use the phone app (QR)</button>':''); }},
+  {k:'rabby',n:'Rabby',c:'#7084FF',t:'R',m:/rabby/i,
+   help:function(){ return '<p>Install the Rabby extension and reload this page. Robinhood Chain is added as a custom network when you connect.</p>'; },
+   acts:function(){ return '<a class="btn sm acc" target="_blank" rel="noopener" href="https://rabby.io/">Get Rabby ↗</a>'+(WC_ID?'<button class="btn sm ghost" data-act="wc">Rabby mobile (QR)</button>':''); }},
+  {k:'trust',n:'Trust Wallet',c:'#0500FF',t:'T',m:/trust/i,
+   help:function(){ return MOBILE?'<p>Opens this page in the Trust Wallet browser. Approve adding Robinhood Chain when asked.</p>':'<p>Install the Trust Wallet extension and reload, or connect the mobile app by QR.</p>'; },
+   acts:function(){ return MOBILE?'<a class="btn sm acc" href="https://link.trustwallet.com/open_url?coin_id=60&url='+encodeURIComponent(pageUrl())+'">Open in Trust Wallet</a>':'<a class="btn sm acc" target="_blank" rel="noopener" href="https://trustwallet.com/download">Get Trust Wallet ↗</a>'+(WC_ID?'<button class="btn sm ghost" data-act="wc">Mobile app (QR)</button>':''); }},
+  {k:'okx',n:'OKX Wallet',c:'#2a2b30',t:'O',m:/okx|okex/i,
+   help:function(){ return '<p>Install OKX Wallet and reload this page, or open it from the app\u2019s Discover browser.</p>'; },
+   acts:function(){ return '<a class="btn sm acc" target="_blank" rel="noopener" href="https://web3.okx.com/download">Get OKX Wallet ↗</a>'+(WC_ID?'<button class="btn sm ghost" data-act="wc">Mobile app (QR)</button>':'')+'<button class="btn sm ghost" data-act="copy">Copy site link</button>'; }}
+];
+
+var ov=$('ov'), mBody=$('mBody');
+function openModal(){ ov.classList.add('show'); if(W.addr) renderAccount(); else renderPicker(); window.dispatchEvent(new Event('eip6963:requestProvider')); beep(520,780,.08,'sine',.03); }
+function closeModal(){ ov.classList.remove('show'); }
+$('mClose').addEventListener('click',closeModal);
+ov.addEventListener('click',function(e){ if(e.target===ov) closeModal(); });
+document.addEventListener('keydown',function(e){ if(e.key==='Escape') closeModal(); });
+['wBtn','wBtn2','wBtn3','cWalRow'].forEach(function(id){ $(id).addEventListener('click',function(){ openModal(); }); });
+
+var CHAIN_IC='<svg width="18" height="18" viewBox="0 0 28 28" fill="none"><path d="M5 7.5 14 14M5 20.5 14 14" stroke="#8c9eff" stroke-width="1.8" stroke-linecap="round"/><path d="M14 14h9" stroke="#f4f1e8" stroke-width="2.4" stroke-linecap="round"/></svg>';
+function netCard(){ return '<div class="netcard"><span class="ic">'+CHAIN_IC+'</span><div><b>Robinhood Chain</b><span>chain ID 4663 · ETH for gas</span></div></div>'; }
+var WALLET_IC='<span class="gic"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#8b8f98" stroke-width="1.5"><rect x="2" y="4" width="12" height="9" rx="2"/><path d="M10.5 8.5h1.5"/></svg></span>';
+var WC_IC='<span class="lg" style="background:#3B99FC"><svg width="18" height="12" viewBox="0 0 30 18" fill="#fff"><path d="M6.1 3.5c4.9-4.7 12.9-4.7 17.8 0l.6.6c.2.2.2.6 0 .9l-2 2c-.1.1-.3.1-.4 0l-.8-.8c-3.4-3.3-9-3.3-12.4 0l-.9.8c-.1.1-.3.1-.4 0l-2-2c-.2-.2-.2-.6 0-.9l.5-.6zm22 4.1 1.8 1.7c.2.2.2.6 0 .9l-8 7.8c-.2.2-.6.2-.9 0l-5.7-5.5c-.1-.1-.2-.1-.2 0l-5.7 5.5c-.2.2-.6.2-.9 0L.2 10.2c-.2-.2-.2-.6 0-.9L2 7.6c.2-.2.6-.2.9 0l5.7 5.5c.1.1.2.1.2 0l5.7-5.5c.2-.2.6-.2.9 0l5.7 5.5c.1.1.2.1.2 0l5.7-5.5c.3-.2.7-.2.9 0z"/></svg></span>';
+
+function renderPicker(err){
+  $('mTitle').textContent='Connect wallet';
+  var list=listOptions(), h=netCard(), taken={};
+  if(list.length){
+    h+='<div class="msec"><span>In this browser</span><span>'+list.length+' found</span></div><div class="wlist">'+list.map(function(p){
+      KNOWN.forEach(function(k){ if(k.m.test(p.info.name+' '+(p.info.rdns||''))) taken[k.k]=1; });
+      var ic=p.info.icon&&/^data:image\//.test(p.info.icon)?'<img alt="" src="'+esc(p.info.icon)+'">':WALLET_IC;
+      return '<button class="wopt" data-u="'+esc(p.info.uuid)+'">'+ic+'<b>'+esc(p.info.name)+'</b><span class="badge">DETECTED</span></button>';
+    }).join('')+'</div>';
+  }
+  if(WC_ID){
+    h+='<div class="msec"><span>Phone wallet</span></div><button class="wc" data-act="wc">'+WC_IC+'<b>WalletConnect</b><small>QR code</small></button>';
+  }
+  var rest=KNOWN.filter(function(k){ return !taken[k.k]; });
+  if(rest.length){
+    h+='<div class="msec"><span>'+(list.length?'Other wallets':'Wallets for Robinhood Chain')+'</span></div><div class="wlist">'+rest.map(function(k){
+      return '<button class="wopt" data-k="'+k.k+'"><span class="lg" style="background:'+k.c+'">'+k.t+'</span><b>'+k.n+'</b><svg class="chev" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4.5 2.5 8 6l-3.5 3.5"/></svg></button><div class="whelp" data-h="'+k.k+'">'+k.help()+'<div class="acts">'+k.acts()+'</div></div>';
+    }).join('')+'</div>';
+  }
+  h+='<div class="merr'+(err?' show':'')+'" id="mErr">'+(err?esc(err):'')+'</div>';
+  h+='<p class="mfoot">If Robinhood Chain is not in your wallet yet, FairCross asks it to add the network with the official RPC and explorer. Connecting only shares your address, and sealing an order here costs no gas.</p>';
+  mBody.innerHTML=h;
+  mBody.querySelectorAll('.wopt[data-u]').forEach(function(b){
+    b.addEventListener('click',function(){
+      var u=b.getAttribute('data-u'), p=u==='legacy'?listOptions()[0]:W.providers[u];
+      b.classList.add('busy'); var bd=b.querySelector('.badge'); if(bd) bd.textContent='CHECK YOUR WALLET…';
+      connect(p).catch(function(e){ renderPicker(niceErr(e)); });
+    });
+  });
+  mBody.querySelectorAll('.wopt[data-k]').forEach(function(b){
+    b.addEventListener('click',function(){
+      var k=b.getAttribute('data-k'), hp=mBody.querySelector('.whelp[data-h="'+k+'"]'), open=!hp.classList.contains('show');
+      mBody.querySelectorAll('.whelp').forEach(function(x){ x.classList.remove('show'); });
+      mBody.querySelectorAll('.wopt[data-k]').forEach(function(x){ x.classList.remove('open'); });
+      if(open){ hp.classList.add('show'); b.classList.add('open'); }
+    });
+  });
+  mBody.querySelectorAll('[data-act="wc"]').forEach(function(b){ b.addEventListener('click',function(){ connectWC().catch(function(e){ renderPicker(niceErr(e)); }); }); });
+  mBody.querySelectorAll('[data-act="copy"]').forEach(function(b){ b.addEventListener('click',function(){ var t=b.textContent; navigator.clipboard.writeText(pageUrl()).then(function(){ b.textContent='Copied'; setTimeout(function(){ b.textContent=t; },1200); }); }); });
+}
+function niceErr(e){
+  var c=e&&(e.code||(e.data&&e.data.originalError&&e.data.originalError.code));
+  if(c===4001) return 'Request rejected in the wallet.';
+  if(c===-32002) return 'Your wallet already has a pending request. Open it and finish or cancel that first.';
+  if(e&&/Connection request reset|User closed modal|Modal closed/i.test(e.message||'')) return 'QR window closed before the wallet connected.';
+  return (e&&e.message)?e.message.slice(0,160):'Something went wrong while connecting.';
+}
+function req(method,params){ return W.prov.request({method:method,params:params||[]}); }
+
+function switchChain(){
+  return req('wallet_switchEthereumChain',[{chainId:CHAIN.chainId}]).catch(function(e){
+    var c=e&&(e.code||(e.data&&e.data.originalError&&e.data.originalError.code));
+    if(c===4902||c===-32603||/unrecognized|not added|unknown chain/i.test(e&&e.message||'')){
+      return req('wallet_addEthereumChain',[CHAIN]);
+    }
+    throw e;
+  }).then(function(){ return req('eth_chainId'); }).then(function(id){ W.chain=id; });
+}
+
+var bound=null;
+function bind(p){
+  if(bound===p||!p.on) return;
+  if(bound&&bound.removeListener){ try{ bound.removeListener('accountsChanged',onAcc); bound.removeListener('chainChanged',onChain); bound.removeListener('disconnect',onDisc); }catch(e){} }
+  p.on('accountsChanged',onAcc); p.on('chainChanged',onChain);
+  if(W.info&&W.info.rdns==='walletconnect') p.on('disconnect',onDisc);
+  bound=p;
+}
+function onAcc(a){ if(!a||!a.length){ disconnect(true); return; } W.addr=a[0]; W.eth=null; W.bal=null; refresh(); }
+function onChain(id){ W.chain=typeof id==='number'?'0x'+id.toString(16):id; refresh(); }
+function onDisc(){ disconnect(true); }
+
+function afterConnect(){
+  store('fc_wallet',W.info.rdns||W.info.uuid);
+  refresh(); renderAccount();
+  say('Connected '+short(W.addr)+(isOk()?' on Robinhood Chain':''));
+  beep(660,990,.12,'triangle',.05);
+}
+function connect(p){
+  if(!p) return Promise.reject(new Error('No wallet selected.'));
+  W.prov=p.provider; W.info=p.info;
+  return req('eth_requestAccounts').then(function(a){
+    if(!a||!a.length) throw new Error('The wallet returned no accounts.');
+    W.addr=a[0]; bind(W.prov);
+    return req('eth_chainId');
+  }).then(function(id){
+    W.chain=id;
+    if(!isOk()) return switchChain().catch(function(e){ say('Connected, but still on another network. '+niceErr(e)); });
+  }).then(afterConnect);
+}
+
+/* WalletConnect — loaded only when used */
+var WCP=null;
+function loadWC(){
+  if(window.HP_WC) return Promise.resolve(window.HP_WC);
+  return new Promise(function(res,rej){
+    var s=document.createElement('script'); s.src='assets/wc.js'; s.async=true;
+    s.onload=function(){ window.HP_WC?res(window.HP_WC):rej(new Error('WalletConnect failed to load.')); };
+    s.onerror=function(){ rej(new Error('WalletConnect failed to load. Check your connection.')); };
+    document.head.appendChild(s);
+  });
+}
+function initWC(){
+  if(WCP) return Promise.resolve(WCP);
+  return loadWC().then(function(EP){
+    return EP.init({
+      projectId:WC_ID, optionalChains:[4663], showQrModal:true,
+      rpcMap:{4663:CHAIN.rpcUrls[0]},
+      metadata:{name:'FairCross',description:'Sealed launch windows on Robinhood Chain',url:location.origin,icons:[location.origin+location.pathname.replace(/[^/]*$/,'')+'assets/favicon.png']},
+      qrModalOptions:{themeMode:'dark'}
+    });
+  }).then(function(p){ WCP=p; return p; });
+}
+function connectWC(){
+  if(!WC_ID) return Promise.reject(new Error('WalletConnect is not configured yet.'));
+  closeModal();
+  return initWC().then(function(p){
+    W.prov=p; W.info={uuid:'walletconnect',name:'WalletConnect',rdns:'walletconnect'};
+    return (p.session?Promise.resolve():p.connect({optionalChains:[4663],rpcMap:{4663:CHAIN.rpcUrls[0]}})).then(function(){
+      var a=p.accounts||[]; if(!a.length) throw new Error('The wallet returned no accounts.');
+      W.addr=a[0]; W.chain='0x'+Number(p.chainId||4663).toString(16); bind(p);
+      if(!isOk()) return switchChain().catch(function(e){ say('Connected, but the wallet did not switch to Robinhood Chain. '+niceErr(e)); });
+    });
+  }).then(function(){ openModal(); afterConnect(); }).catch(function(e){ openModal(); throw e; });
+}
+
+function disconnect(silent){
+  if(W.prov&&!silent){
+    if(W.info&&W.info.rdns==='walletconnect'){ try{ W.prov.disconnect().catch(function(){}); }catch(e){} }
+    else { try{ req('wallet_revokePermissions',[{eth_accounts:{}}]).catch(function(){}); }catch(e){} }
+  }
+  W.addr=null; W.chain=null; W.eth=null; W.bal=null;
+  store('fc_wallet',null);
+  paint();
+  if(ov.classList.contains('show')) renderPicker();
+  if(!silent) say('Disconnected');
+}
+
+function refresh(){
+  paint();
+  if(!W.addr||!isOk()){ if(ov.classList.contains('show')&&W.addr) renderAccount(); return; }
+  var addr=W.addr;
+  req('eth_getBalance',[addr,'latest']).then(function(b){ if(addr!==W.addr) return; W.eth=b; if(ov.classList.contains('show')) renderAccount(); }).catch(function(){});
+  if(TOKCA){
+    var data='0x70a08231'+addr.toLowerCase().replace(/^0x/,'').padStart(64,'0');
+    req('eth_call',[{to:TOKCA,data:'0x313ce567'},'latest']).then(function(d){ var n=parseInt(d,16); if(n>=0&&n<=36) W.dec=n; }).catch(function(){})
+    .then(function(){ return req('eth_call',[{to:TOKCA,data:data},'latest']); })
+    .then(function(b){ if(addr!==W.addr) return; W.bal=b; paint(); if(ov.classList.contains('show')) renderAccount(); }).catch(function(){});
+  }
+}
+
+function sealedList(){ try{ return JSON.parse(store('fc_sealed')||'[]')||[]; }catch(e){ return []; } }
+function mySealed(){ if(!W.addr) return []; var a=W.addr.toLowerCase(); return sealedList().filter(function(s){ return s.a===a; }); }
+
+function paint(){
+  var b=$('wBtn'), b2=$('wBtn2'), w3=document.querySelector('.wl3'), cw=$('cWal'), tb=$('tokBal');
+  b.classList.remove('bad');
+  if(!W.addr){
+    b.innerHTML='<span class="wl">Connect wallet</span>'; b2.textContent='Connect wallet';
+    w3.textContent='Connect wallet'; cw.textContent='connect · Robinhood Chain';
+    tb.textContent='Connect a wallet on Robinhood Chain to see your $FAIRCROSS.';
+  } else if(!isOk()){
+    b.classList.add('bad'); b.innerHTML='<span class="net"><i class="wdot bad"></i>Wrong network</span>';
+    b2.textContent='Switch to Robinhood Chain'; w3.textContent='Switch to Robinhood Chain'; cw.textContent='wrong network';
+    tb.textContent='Your wallet is on another network. $FAIRCROSS lives on Robinhood Chain.';
+  } else {
+    b.innerHTML='<span class="net"><i class="wdot"></i><span class="addr">'+short(W.addr)+'</span></span>';
+    b2.textContent='Wallet connected · '+short(W.addr); w3.textContent=short(W.addr);
+    var n=mySealed().length;
+    cw.textContent=short(W.addr)+(n?' · '+n+' sealed':'');
+    tb.innerHTML=!TOKCA?'Balance shows from the first cross · <b>'+short(W.addr)+'</b>':'Your balance · <b>'+(W.bal?fmtUnits(W.bal,W.dec,2):'…')+' $FAIRCROSS</b>';
+  }
+}
+
+/* identicon */
+function hsh(s){ var h=2166136261; for(var i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619); } return h>>>0; }
+function drawAv(cv,seed){
+  var c=cv.getContext('2d'), r=seed, n=5, u=cv.width/n;
+  function nx(){ r=(Math.imul(r,1664525)+1013904223)>>>0; return r/4294967296; }
+  var cols=['#8c9eff','#ff8e6b','#f4f1e8','#7ee0b0'], col=cols[Math.floor(nx()*4)];
+  c.fillStyle='#15161b'; c.fillRect(0,0,cv.width,cv.height);
+  c.fillStyle=col;
+  for(var y=0;y<n;y++) for(var x=0;x<3;x++) if(nx()<.5){ c.fillRect(x*u,y*u,u,u); c.fillRect((n-1-x)*u,y*u,u,u); }
+}
+
+var LAUNCHES=['$HAT','$DESK','$SPOON','$ORBIT','$TAXI','$GLUE','$CABLE','$PARADE','$FAIRCROSS'];
+var side='buy';
+function renderAccount(){
+  if(!W.addr){ renderPicker(); return; }
+  $('mTitle').textContent='Your wallet';
+  var ok=isOk(), mine=mySealed();
+  var balTxt=!TOKCA?'from the first cross':(W.bal==null?'…':fmtUnits(W.bal,W.dec,2));
+  var last=mine.length?mine[mine.length-1]:null;
+  var h='<div class="acct">'+
+    '<div class="who"><canvas width="80" height="80" id="accAv"></canvas><div><b>'+short(W.addr)+'</b><span>'+esc(W.info?W.info.name:'Wallet')+'</span></div><button class="btn sm ghost cp" id="cpA">Copy</button></div>'+
+    '<div class="kv">'+
+      '<div><span>Network</span>'+(ok?'<b class="ok">Robinhood Chain</b>':'<b class="bad">chain '+parseInt(W.chain,16)+'</b>')+'</div>'+
+      '<div><span>ETH</span><b>'+(ok?(W.eth?fmtUnits(W.eth,18,5):'…'):'—')+'</b></div>'+
+      '<div><span>$FAIRCROSS</span><b>'+(ok?balTxt:'—')+'</b></div>'+
+      '<div><span>Sealed from this wallet</span><b>'+mine.length+'</b></div>'+
+    '</div>';
+  if(ok){
+    h+='<div class="sealf"><h4>SEAL AN ORDER · NO GAS</h4>'+
+      '<div class="side"><button type="button" data-s="buy" class="'+(side==='buy'?'on':'')+'">BUY</button><button type="button" data-s="sell" class="'+(side==='sell'?'on':'')+'">SELL</button></div>'+
+      '<div class="row"><label>LAUNCH<select id="sfTok">'+LAUNCHES.map(function(t){ return '<option>'+t+'</option>'; }).join('')+'</select></label>'+
+      '<label>SIZE, ETH<input id="sfSize" inputmode="decimal" value="0.05" autocomplete="off"></label></div>'+
+      '<label>MAX PRICE, ETH · OPTIONAL<input id="sfCap" inputmode="decimal" placeholder="no cap" autocomplete="off"></label>'+
+      '<button class="btn sm acc" type="button" id="sfGo">Sign &amp; seal</button>'+
+      '<div class="sealed-out" id="sfOut">'+(last?'Last sealed · <b>'+esc(last.tok)+'</b> · commitment '+esc(last.c.slice(0,18))+'…':'The wallet signs your intent, and only its hash leaves this page. Nobody sees the side, the size or the cap before the cross.')+'</div>'+
+    '</div>';
+  }
+  h+='<div class="btns">'+(ok?'<a class="btn sm ghost" target="_blank" rel="noopener" href="'+CHAIN.blockExplorerUrls[0]+'/address/'+W.addr+'">Explorer ↗</a>':'<button class="btn sm acc" id="swN">Switch network</button>')+
+    '<button class="btn sm ghost" id="dcB">Disconnect</button></div>'+
+  '</div>';
+  mBody.innerHTML=h;
+  drawAv($('accAv'),hsh(W.addr.toLowerCase()));
+  $('cpA').addEventListener('click',function(){ var b=this; navigator.clipboard.writeText(W.addr).then(function(){ b.textContent='Copied'; setTimeout(function(){ b.textContent='Copy'; },1200); }); });
+  $('dcB').addEventListener('click',function(){ disconnect(false); });
+  if($('swN')) $('swN').addEventListener('click',function(){ switchChain().then(refresh).catch(function(e){ say(niceErr(e)); }); });
+  mBody.querySelectorAll('.side button').forEach(function(b){ b.addEventListener('click',function(){ side=b.getAttribute('data-s'); mBody.querySelectorAll('.side button').forEach(function(x){ x.classList.toggle('on',x===b); }); beep(side==='buy'?700:500,side==='buy'?900:380,.07,'sine',.03); }); });
+  if($('sfGo')) $('sfGo').addEventListener('click',sealOrder);
+}
+
+function hexUtf8(s){ var b=new TextEncoder().encode(s), h='0x'; for(var i=0;i<b.length;i++) h+=b[i].toString(16).padStart(2,'0'); return h; }
+function sha(hex){
+  try{
+    var clean=hex.replace(/^0x/,''), u=new Uint8Array(clean.length/2);
+    for(var i=0;i<u.length;i++) u[i]=parseInt(clean.substr(i*2,2),16);
+    return crypto.subtle.digest('SHA-256',u).then(function(d){ return '0x'+Array.from(new Uint8Array(d)).map(function(x){ return x.toString(16).padStart(2,'0'); }).join(''); });
+  }catch(e){ return Promise.resolve(hex.slice(0,66)); }
+}
+function sealOrder(){
+  var tok=$('sfTok').value, size=parseFloat(($('sfSize').value||'').replace(',','.')), capRaw=($('sfCap').value||'').replace(',','.').trim(), cap=capRaw?parseFloat(capRaw):null;
+  var out=$('sfOut'), btn=$('sfGo');
+  if(!(size>0)){ out.textContent='Enter a size above zero.'; return; }
+  if(capRaw&&!(cap>0)){ out.textContent='The cap has to be a number above zero, or leave it empty.'; return; }
+  var win=Math.floor(Date.now()/300000);
+  var msg='FairCross sealed order\n\nlaunch: '+tok+'\nside: '+side.toUpperCase()+'\nsize: '+size+' ETH\nmax price: '+(cap?cap+' ETH':'none')+'\nwindow: '+win+'\nwallet: '+W.addr+'\nchain: 4663\nissued: '+new Date().toISOString();
+  btn.textContent='Check your wallet…'; btn.disabled=true;
+  req('personal_sign',[hexUtf8(msg),W.addr]).then(function(sig){
+    return sha(sig).then(function(c){
+      var list=sealedList(); list.push({a:W.addr.toLowerCase(),tok:tok,c:c,w:win,t:Date.now()}); store('fc_sealed',JSON.stringify(list.slice(-60)));
+      beep(2400,2400,.05,'sine',.03); beep(880,1320,.12,'sine',.05);
+      say('Order sealed for '+tok+' · '+c.slice(0,10)+'…');
+      if(window.__vaultSeal) window.__vaultSeal();
+      renderAccount(); paint();
+    });
+  }).catch(function(e){ btn.textContent='Sign & seal'; btn.disabled=false; out.textContent=niceErr(e); });
+}
+
+/* silent reconnect */
+(function(){
+  var last=store('fc_wallet'); if(!last) return;
+  if(last==='walletconnect'){
+    if(!WC_ID) return;
+    initWC().then(function(p){
+      if(!p.session||!(p.accounts||[]).length) return;
+      W.prov=p; W.info={uuid:'walletconnect',name:'WalletConnect',rdns:'walletconnect'};
+      W.addr=p.accounts[0]; W.chain='0x'+Number(p.chainId||4663).toString(16); bind(p); refresh();
+    }).catch(function(){});
+    return;
+  }
+  setTimeout(function(){
+    var list=listOptions(), p=null;
+    list.forEach(function(x){ if(x.info.rdns===last||x.info.uuid===last) p=x; });
+    if(!p&&last==='legacy') p=list[0];
+    if(!p) return;
+    p.provider.request({method:'eth_accounts'}).then(function(a){
+      if(!a||!a.length) return;
+      W.prov=p.provider; W.info=p.info; W.addr=a[0]; bind(W.prov);
+      return W.prov.request({method:'eth_chainId'}).then(function(id){ W.chain=id; refresh(); });
+    }).catch(function(){});
+  },350);
+})();
+
+paint();
+window.__fcw=W;
 })();
 </script>
 </body>
